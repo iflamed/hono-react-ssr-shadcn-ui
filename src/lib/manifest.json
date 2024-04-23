@@ -1,0 +1,18 @@
+{
+  "_vendor-CyMmVI6Y.js": {
+    "file": "static/vendor-CyMmVI6Y.js",
+    "name": "vendor"
+  },
+  "src/client.tsx": {
+    "file": "static/client-DHV1Rs29.js",
+    "name": "client",
+    "src": "src/client.tsx",
+    "isEntry": true,
+    "imports": [
+      "_vendor-CyMmVI6Y.js"
+    ],
+    "css": [
+      "static/client-IzjerTXb.css"
+    ]
+  }
+}
