@@ -1,15 +1,15 @@
 {
-  "_vendor-CyMmVI6Y.js": {
-    "file": "static/vendor-CyMmVI6Y.js",
+  "_vendor-BSCX9tAx.js": {
+    "file": "static/vendor-BSCX9tAx.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-DHV1Rs29.js",
+    "file": "static/client-BtQLkU5U.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-CyMmVI6Y.js"
+      "_vendor-BSCX9tAx.js"
     ],
     "css": [
       "static/client-IzjerTXb.css"

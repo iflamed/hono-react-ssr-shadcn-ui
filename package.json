@@ -32,6 +32,7 @@
     "@types/react-dom": "^18.2.25",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
+    "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^3.4.3",
     "vite": "^5.0.12",
     "wrangler": "^3.47.0"
