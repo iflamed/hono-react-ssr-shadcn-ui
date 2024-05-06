@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
         }),
       ],
       ssr: {
-        external: ['react', 'react-dom'],
+        external: ['react', 'react-dom', '@prisma/client', '@prisma/adapter-d1'],
       },
       resolve: {
         alias: {

@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@hono/react-renderer": "^0.2.0",
+    "@prisma/adapter-d1": "^5.13.0",
+    "@prisma/client": "^5.13.0",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
