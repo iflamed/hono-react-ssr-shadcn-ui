@@ -27,8 +27,6 @@ app.route('/', createBlogServer({
   blogTitle: 'Hono React Blog',
   blogDescription: 'A place to share stories about Honojs.',
   urlPrefix: 'https://hono-react-ssr-shadcn-ui.pages.dev',
-  username: 'admin',
-  password: '123456'
 }))
 
 export default app

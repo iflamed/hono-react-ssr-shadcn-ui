@@ -7,6 +7,8 @@ import slugify from '@sindresorhus/slugify'
 
 type Bindings = {
     blog: KVNamespace
+    BLOG_USERNAME: string
+    BLOG_PASSWORD: string
 }
 
 type Options = {
@@ -14,8 +16,6 @@ type Options = {
     blogTitle: string
     blogDescription: string
     urlPrefix: string
-    username: string
-    password: string
 }
 
 export default function createBlogServer({
@@ -23,8 +23,6 @@ export default function createBlogServer({
     blogTitle,
     blogDescription,
     urlPrefix,
-    username,
-    password
 }:Options) {
     const app = new Hono<{ Bindings: Bindings }>()
 
@@ -32,8 +30,11 @@ export default function createBlogServer({
     app.use(ViewRenderer)
     const author = basicAuth(
         {
-            username: username,
-            password: password,
+            verifyUser: (username, password, c) => {
+                return (
+                    username === c.env.BLOG_USERNAME && password === c.env.BLOG_PASSWORD
+                )
+            },
         }
     )
     app.use('/blog/*', author)

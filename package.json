@@ -19,7 +19,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "hono": "^4.5.11",
-    "lucide-react": "^0.461.0",
+    "lucide-react": "^0.462.0",
     "next-themes": "^0.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -33,6 +33,7 @@
     "@cloudflare/workers-types": "^4.20240903.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
     "@hono/vite-dev-server": "^0.17.0",
+    "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
@@ -41,7 +42,7 @@
     "postcss": "^8.4.45",
     "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^3.4.10",
-    "vite": "^5.4.3",
+    "vite": "^6.0.1",
     "wrangler": "^3.75.0"
   }
 }

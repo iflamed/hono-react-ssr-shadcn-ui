@@ -1,18 +1,18 @@
 {
-  "_vendor-4ldeB94U.js": {
-    "file": "static/vendor-4ldeB94U.js",
+  "_vendor-hZDEVzp7.js": {
+    "file": "static/vendor-hZDEVzp7.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-DA8BnX6w.js",
+    "file": "static/client-C6CBm-nJ.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-4ldeB94U.js"
+      "_vendor-hZDEVzp7.js"
     ],
     "css": [
-      "static/client-DHzl75o1.css"
+      "static/client-Ulfth5Ou.css"
     ]
   }
 }
