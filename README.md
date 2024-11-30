@@ -1,5 +1,14 @@
+# Hono-react-ssr-shadcn-ui
+> Template code for Honojs with React SSR, Shadcn-UI and a simple blog which running on Cloudflare Pages.
+
+## Online Demo
+Home page: [https://hono-react-ssr-shadcn-ui.pages.dev/](https://hono-react-ssr-shadcn-ui.pages.dev/)
+
+Blogs Page: [https://hono-react-ssr-shadcn-ui.pages.dev/blogs](https://hono-react-ssr-shadcn-ui.pages.dev/blogs)
+
 ## Develop and Deploy
 
+Start the development server
 ```shell
 npm install
 # Start the dev server
@@ -8,6 +17,7 @@ npm run dev
 npm run client
 ```
 
+Deploy to Cloudflare Pages
 ```shell
 npm run deploy
 ```
