@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { renderer } from './renderer'
 import initView from './view'
 import { ViewRenderer } from './middleware'
+import createBlogServer from './blog'
 
 initView()
 const app = new Hono()
@@ -19,5 +20,15 @@ app.get('/', (c) => {
     }
   })
 })
+
+// todo you need change the blog server user name and password
+app.route('/', createBlogServer({
+  defaultOGImage: 'https://aicanvas.app/statics/uploads/1732953286728187318_blog_banner.jpg',
+  blogTitle: 'Hono React Blog',
+  blogDescription: 'A place to share stories about Honojs.',
+  urlPrefix: 'https://hono-react-ssr-shadcn-ui.pages.dev',
+  username: 'admin',
+  password: '123456'
+}))
 
 export default app

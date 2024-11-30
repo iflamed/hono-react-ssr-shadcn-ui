@@ -9,9 +9,13 @@
     "version": "echo \"export default `date +'%s'`\" > ./src/config/build_time.ts && echo \"export default true\" > ./src/config/is_prod.ts"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.0",
     "@hono/react-renderer": "^0.2.1",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.0.2",
+    "@sindresorhus/slugify": "^2.2.1",
+    "axios": "^1.7.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "hono": "^4.5.11",
@@ -19,6 +23,8 @@
     "next-themes": "^0.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-share": "^5.1.1",
+    "remarkable": "^2.0.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
@@ -30,6 +36,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "@types/remarkable": "^2.0.8",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.45",
     "rollup-preserve-directives": "^1.1.1",

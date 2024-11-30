@@ -1,8 +1,27 @@
 import {} from 'hono'
 
+interface BlogPost {
+  slug: string
+  title: string
+  desc: string
+  banner: string
+  markdown?: string
+  lang?: string
+  ts: number
+}
+interface OpenGraph {
+  site_name: string
+  title?: string
+  image: string
+  url: string
+}
 interface ViewMeta {
-  title: string,
-  manifest?: Manifest,
+  title: string
+  lang?: string
+  description?: string
+  open_graph?: OpenGraph
+  chat?: string
+  manifest?: Manifest
 }
 interface ViewData {
   name?: string,
@@ -22,6 +41,12 @@ interface Manifest {
   [key: string]: ManifestItem
 }
 
+interface SocialMedia {
+  title: string
+  url: string
+  hashtags?: string[]
+  images?: string[]
+}
 
 declare module 'hono' {
   interface Context {
