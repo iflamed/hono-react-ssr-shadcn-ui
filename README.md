@@ -72,3 +72,5 @@ TapAI Blog: [https://tapai.aicanvas.app/blogs](https://tapai.aicanvas.app/blogs)
 1. TapAI: [https://tapai.aicanvas.app/](https://tapai.aicanvas.app/), a site provide a iOS shortcut to boost your productivity, which you can use ChatGPT with TapAI to add calendar, reminder, note easily.
 
 2. Hichly: [https://hichly.com](https://hichly.com), Hichly is the ultimate platform for sharing and refining niche ideas with community feedback to turn your concepts into reality.
+
+3. Dot Copilot: [https://dotcopilot.ai](https://dotcopilot.ai), a non-intrusive and customizable Android AI assistant that simplifies your daily tasks. Parse receipts, manage to-dos, and more—Dot Copilot is here to help without interrupting your workflow.
