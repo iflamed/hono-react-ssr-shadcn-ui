@@ -15,11 +15,17 @@ interface OpenGraph {
   image: string
   url: string
 }
+interface ArticleMeta {
+  publisher: string
+  publishedAt: string
+  modifiedAt: string
+}
 interface ViewMeta {
   title: string
   lang?: string
   description?: string
   open_graph?: OpenGraph
+  article?: ArticleMeta
   chat?: string
   manifest?: Manifest
 }

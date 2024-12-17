@@ -16,6 +16,7 @@ type Options = {
     blogTitle: string
     blogDescription: string
     urlPrefix: string
+    publisher: string
 }
 
 export default function createBlogServer({
@@ -23,7 +24,8 @@ export default function createBlogServer({
     blogTitle,
     blogDescription,
     urlPrefix,
-}:Options) {
+    publisher,
+}: Options) {
     const app = new Hono<{ Bindings: Bindings }>()
 
     app.use(renderer)
@@ -224,8 +226,9 @@ export default function createBlogServer({
 
     app.get('/article/:idx', async (c) => {
         const slug = c.req.param('idx')
-        const value = await c.env.blog.get(slug);
-        const post = JSON.parse(value as string)
+        const value = await c.env.blog.getWithMetadata(slug);
+        const post = JSON.parse(value.value as string)
+        const postMeta = value.metadata as BlogPost
 
         const listValue = await c.env.blog.list({
             limit: 3,
@@ -253,6 +256,11 @@ export default function createBlogServer({
                     title: post.title,
                     image: post.banner,
                     url,
+                },
+                article: {
+                    publisher: publisher,
+                    publishedAt: (new Date(postMeta.ts)).toISOString(),
+                    modifiedAt: (new Date(postMeta.ts)).toISOString(),
                 }
             },
             props: {

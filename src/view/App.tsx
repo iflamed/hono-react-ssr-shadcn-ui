@@ -57,6 +57,9 @@ export default function App({ children, view, manifest }: LayoutProps) {
                 {view.meta.open_graph && <><meta property="twitter:domain" content={domain} />
                 <meta property="twitter:url" content={view.meta.open_graph?.url} />
                 <meta name="twitter:image" content={view.meta.open_graph?.image} /></>}
+                {view.meta.article && <><meta property="article:publisher" content={view.meta.article.publisher} />
+                <meta property="article:published_time" content={view.meta.article.publishedAt} />
+                <meta property="article:modified_time" content={view.meta.article.modifiedAt} /></>}
                 {cssDoms}
                 <script dangerouslySetInnerHTML={{__html: viewScript}} />
                 {!isProd &&<script type="module" src="http://localhost:5174/src/client.tsx"></script>}

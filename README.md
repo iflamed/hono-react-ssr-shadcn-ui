@@ -48,6 +48,7 @@ app.route('/', createBlogServer({
   blogTitle: 'Hono React Blog',
   blogDescription: 'A place to share stories about Honojs.',
   urlPrefix: 'https://hono-react-ssr-shadcn-ui.pages.dev',
+  publisher: 'https://x.com/dotcopilot_ai',
 }))
 ```
 
