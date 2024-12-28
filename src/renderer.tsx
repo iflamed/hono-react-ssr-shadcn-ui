@@ -22,7 +22,9 @@ export function storeViewByName(name: string, item: React.FC<any>):void {
     views.set(name, item)
 }
 
-export const renderer = reactRenderer(App, {})
+export const renderer = reactRenderer(App, {
+  docType: true
+})
 
 export const viewRenderer = (name:string, view: ViewData) => {
   const Comp = getViewByName(name)
