@@ -22,6 +22,20 @@ export default defineConfig(({ mode }) => {
               vendor: [
                 'react',
                 'react-dom',
+                '@date-fns/utc',
+                '@radix-ui/react-label',
+                '@radix-ui/react-select',
+                '@radix-ui/react-slot',
+                'axios',
+                'class-variance-authority',
+                'clsx',
+                'lucide-react',
+                'next-themes',
+                'react-share',
+                'remarkable',
+                'sonner',
+                'tailwind-merge',
+                'tailwindcss-animate',
               ]
             }
           },

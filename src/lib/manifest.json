@@ -1,15 +1,15 @@
 {
-  "_vendor-hZDEVzp7.js": {
-    "file": "static/vendor-hZDEVzp7.js",
+  "_vendor-Cfp7mU0N.js": {
+    "file": "static/vendor-Cfp7mU0N.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-Blbnq9-h.js",
+    "file": "static/client-9jptKE3z.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-hZDEVzp7.js"
+      "_vendor-Cfp7mU0N.js"
     ],
     "css": [
       "static/client-Ulfth5Ou.css"
