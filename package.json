@@ -43,6 +43,6 @@
     "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^4.0.3",
     "vite": "^6.0.1",
-    "wrangler": "^3.75.0"
+    "wrangler": "^4.0.0"
   }
 }
