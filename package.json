@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "^2.1.0",
-    "@hono/react-renderer": "^0.3.0",
+    "@hono/react-renderer": "^1.0.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.0.2",
