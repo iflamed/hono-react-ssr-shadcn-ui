@@ -1,4 +1,8 @@
+![Hono,React,SSR,Shadcn/ui,Cloudflare Pages,Cursor](https://cdn.dotcopilot.ai/images/admin-372a79ec-59da-4165-a464-3e6a3c752de1-1744740480921.webp)
 # Hono-react-ssr-shadcn-ui
+
+Support `Tailwindcss 4.1` `React 19.1` and `Vite 6`
+
 > Template code for Honojs with React SSR, Shadcn-UI and a simple blog which running on Cloudflare Pages.
 
 ## Online Demo
