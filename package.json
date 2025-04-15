@@ -13,7 +13,7 @@
   "dependencies": {
     "@date-fns/utc": "^2.1.0",
     "@hono/react-renderer": "^1.0.1",
-    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-label": "^2.1.3",
     "@radix-ui/react-select": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.0",
     "@sindresorhus/slugify": "^2.2.1",
@@ -28,9 +28,10 @@
     "react-dom": "^19.1.0",
     "react-share": "^5.2.2",
     "remarkable": "^2.0.1",
-    "sonner": "^2.0.1",
+    "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.2.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250415.0",
