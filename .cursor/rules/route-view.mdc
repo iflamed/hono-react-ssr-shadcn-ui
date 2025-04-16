@@ -22,7 +22,7 @@ export default function initView() {
 ## Use the view in the route [index.tsx](mdc:src/index.tsx)
 Just call the `c.view` method like below with title and props:
 ```typescript
-app.get('/', (c) => {
+app.get('/login', (c) => {
   return c.view('login', {
     meta: {
       title: 'The title of this page',
