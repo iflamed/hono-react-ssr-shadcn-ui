@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Tutorial on creating a route and using views
+
+If you create a new page, you need to add the mapping relationship in [view.tsx](mdc:src/view.tsx) first, and then you can use this page in the route.
+
+## Add page to view map
+Assuming you have a login page, we need to import this page now in [view.tsx](mdc:src/view.tsx) and then add a mapping relationship for this page with this function storeViewByName('login', Login) and append it to the initView function. The first parameter of the storeViewByName function is the name of the page you can customize, and the second parameter is the page you have imported.
+
+The code maybe like below:
+```typescript
+import LoginPage from "./view/LoginPage";
+export default function initView() {
+    storeViewByName('login', LoginPage)
+}
+```
+
+## Use the view in the route [index.tsx](mdc:src/index.tsx)
+Just call the `c.view` method like below with title and props:
+```typescript
+app.get('/', (c) => {
+  return c.view('login', {
+    meta: {
+      title: 'The title of this page',
+    },
+    props: {
+      tp: 'index'
+    }
+  })
+})
+```
+The `props` attribute in the route is the view page parameters, and the meta attribute type is defined with `interface ViewMeta` in file [global.d.ts](mdc:src/global.d.ts).
