@@ -15,8 +15,8 @@ alwaysApply: true
 - [index.tsx](mdc:src/index.tsx) : The main file which contain server routes, should add new route in this file
 - [view.tsx](mdc:src/view.tsx) : This file contain all view maps, should import and add each view in this file
 - [global.d.ts](mdc:src/global.d.ts) : This file contains all Typescript type definitions, and new type definitions need to be placed in this file
-- /config : This directory contains some dynamic configurations for this application, which can be written to this directory.
-- /lib : This directory can be used to put some public libraries, please put some public functions into the [utils.ts](mdc:src/lib/utils.ts) file in this directory and mark each funtion to be exported.
-- /view : This directory is used to place all the pages of the program in a separate file for each page.
-- /components : This directory is used to put some public React components, you need to put the new React components into this directory.
-- /components/ui : This directory is dedicated to some shadcn/ui components, please do not modify the files in this folder, the contents of this folder can only be modified by the command npx shadcn@latest add {component-name}.
+- /src/config : This directory contains some dynamic configurations for this application, which can be written to this directory.
+- /src/lib : This directory can be used to put some public libraries, please put some public functions into the [utils.ts](mdc:src/lib/utils.ts) file in this directory and mark each funtion to be exported.
+- /src/view : This directory is used to place all the pages of the program in a separate file for each page.
+- /src/components : This directory is used to put some public React components, you need to put the new React components into this directory.
+- /src/components/ui : This directory is dedicated to some shadcn/ui components, please do not modify the files in this folder, the contents of this folder can only be modified by the command npx shadcn@latest add {component-name}.
