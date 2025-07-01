@@ -49,7 +49,7 @@
     "prettier-plugin-tailwindcss": "^0.6.11",
     "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^4.1.4",
-    "vite": "^6.2.6",
+    "vite": "^7.0.0",
     "wrangler": "^4.11.0"
   }
 }
