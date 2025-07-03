@@ -35,7 +35,6 @@ export default defineConfig(({ mode }) => {
                 'remarkable',
                 'sonner',
                 'tailwind-merge',
-                'tailwindcss-animate',
               ]
             }
           },

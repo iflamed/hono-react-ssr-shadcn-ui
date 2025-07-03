@@ -13,25 +13,24 @@
   "dependencies": {
     "@date-fns/utc": "^2.1.0",
     "@hono/react-renderer": "^1.0.1",
-    "@radix-ui/react-label": "^2.1.3",
-    "@radix-ui/react-select": "^2.1.7",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.0",
     "@sindresorhus/slugify": "^2.2.1",
-    "axios": "^1.8.4",
+    "axios": "^1.10.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "hono": "^4.7.6",
+    "hono": "^4.8.3",
     "lucide-react": "^0.525.0",
     "next-themes": "^0.4.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-share": "^5.2.2",
     "remarkable": "^2.0.1",
-    "sonner": "^2.0.3",
-    "tailwind-merge": "^3.2.0",
-    "tailwindcss-animate": "^1.0.7",
-    "tw-animate-css": "^1.2.5"
+    "sonner": "^2.0.6",
+    "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "^1.3.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250415.0",
@@ -45,11 +44,11 @@
     "@types/remarkable": "^2.0.8",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "rollup-preserve-directives": "^1.1.1",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "^4.1.11",
     "vite": "^7.0.0",
-    "wrangler": "^4.11.0"
+    "wrangler": "^4.23.0"
   }
 }
