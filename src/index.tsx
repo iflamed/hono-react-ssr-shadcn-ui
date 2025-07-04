@@ -1,4 +1,4 @@
-import './config/env'
+import env from './config/env'
 import { Hono } from 'hono'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { renderer } from './renderer'
@@ -32,5 +32,7 @@ app.route('/', createBlogServer({
   urlPrefix: 'https://hono-react-ssr-shadcn-ui.pages.dev',
   publisher: 'https://x.com/dotcopilot_ai',
 }))
+
+console.info('APP_PORT is: ', env.APP_PORT)
 
 export default app
