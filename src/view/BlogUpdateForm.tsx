@@ -177,11 +177,11 @@ export default function BlogUpdateForm({ post }: { post: BlogPost }) {
           />
         </div>}
   
-        <div className="flex flex-row justify-center items-center gap-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
+        <div className="flex flex-row justify-start items-center gap-2">
+            <Button type="submit" className="w-48" disabled={isLoading}>
             {isLoading ? 'Updating...' : 'Save Blog Post'}
             </Button>
-            {post.slug && <Button type="button" className="w-full" variant="destructive" onClick={deletePost}>
+            {post.slug && <Button type="button" className="w-48" variant="destructive" onClick={deletePost}>
                 Delete
             </Button>}
         </div>
