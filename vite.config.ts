@@ -1,9 +1,12 @@
-import build from '@hono/vite-cloudflare-pages'
+import * as dotenv from "dotenv"
+import build from "@hono/vite-build/node";
 import devServer from '@hono/vite-dev-server'
-import adapter from '@hono/vite-dev-server/cloudflare'
 import preserveDirectives from 'rollup-preserve-directives'
 import { defineConfig } from 'vite'
 import path from 'path'
+dotenv.config({
+  path: '.env.production.local'
+})
 
 export default defineConfig(({ mode }) => {
   if (mode === 'client') {
@@ -50,9 +53,10 @@ export default defineConfig(({ mode }) => {
     return {
       plugins: [
         preserveDirectives(),
-        build(),
+        build({
+          port: parseInt(process.env.APP_PORT),
+        }),
         devServer({
-          adapter,
           entry: 'src/index.tsx'
         }),
       ],

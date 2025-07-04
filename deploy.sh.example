@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+DIR=/var/www/path/to/deploy
+scp -r ./dist/. server:$DIR/dist/
+scp ./src/db/schema.ts server:$DIR/src/db
+scp ./src/config/env.ts server:$DIR/src/config
+scp ./tsconfig.json server:$DIR/tsconfig.json
+scp ./drizzle.config.ts server:$DIR/drizzle.config.ts
+scp ./package.json server:$DIR/package.json
+scp ./package-lock.json server:$DIR/package-lock.json
+scp ./.env.production.local server:$DIR/.env
+ssh server "cd $DIR && npm install && npm run migrate"
+ssh server "sudo supervisorctl restart process_name"

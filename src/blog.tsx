@@ -4,12 +4,10 @@ import { renderer } from './renderer'
 import { ViewRenderer } from './middleware'
 import { BlogPost, } from './global'
 import slugify from '@sindresorhus/slugify'
-
-type Bindings = {
-    blog: KVNamespace
-    BLOG_USERNAME: string
-    BLOG_PASSWORD: string
-}
+import db from './db'
+import { blog } from './db/schema'
+import { asc, lt, eq } from 'drizzle-orm';
+import env from './config/env'
 
 type Options = {
     defaultOGImage: string
@@ -26,7 +24,7 @@ export default function createBlogServer({
     urlPrefix,
     publisher,
 }: Options) {
-    const app = new Hono<{ Bindings: Bindings }>()
+    const app = new Hono()
 
     app.use(renderer)
     app.use(ViewRenderer)
@@ -34,32 +32,32 @@ export default function createBlogServer({
         {
             verifyUser: (username, password, c) => {
                 return (
-                    username === c.env.BLOG_USERNAME && password === c.env.BLOG_PASSWORD
+                    username === env.BLOG_USERNAME && password === env.BLOG_PASSWORD
                 )
             },
         }
     )
     app.use('/blog/*', author)
     app.get('/blog/list', async (c) => {
-        const value = await c.env.blog.list({
+        const values = await db.query.blog.findMany({
             limit: parseInt(c.req.query('limit') || '12'),
-            cursor: c.req.query('cursor'),
+            where: lt(blog.id, parseInt(c.req.query('cursor') || '99999999')),
+            orderBy: [asc(blog.id)],
         });
 
         const posts: BlogPost[] = []
-        value.keys.forEach((e) => {
-            const meta: BlogPost = e.metadata as BlogPost
+        values.forEach((v) => {
             posts.push({
-                slug: e.name,
-                title: meta.title,
-                desc: meta.desc,
-                banner: meta.banner,
-                ts: meta.ts,
+                slug: v.slug,
+                title: v.title,
+                desc: v.desc,
+                banner: v.banner,
+                ts: v.ts,
             })
         })
-        let cursor = ''
-        if (!value.list_complete) {
-            cursor = value.cursor
+        let cursor = 0
+        if (values.length > 0) {
+            cursor = values[values.length - 1].id
         }
         return c.view('bloglist', {
             meta: {
@@ -119,14 +117,15 @@ export default function createBlogServer({
         } else {
             slug = key + '-' + meta.slug.replace(/\s+/g, '-')
         }
-        let value = await c.env.blog.put(slug, body, {
-            metadata: {
-                title: meta.title,
-                desc: meta.description,
-                banner: meta.banner,
-                lang: meta.lang,
-                ts: ts
-            }
+        const data: any = JSON.parse(body)
+        let value = await db.insert(blog).values({
+            slug,
+            ts,
+            title: meta.title,
+            desc: meta.description,
+            banner: meta.banner,
+            markdown: data.markdown,
+            lang: meta.lang,
         });
         return c.json({
             status: 0,
@@ -136,11 +135,13 @@ export default function createBlogServer({
 
     app.get('/blog/edit/:idx', async (c) => {
         const slug = c.req.param('idx')
-        const value = await c.env.blog.get(slug);
+        const post = await db.query.blog.findFirst({
+            where: eq(blog.slug, slug)
+        });
 
-        const post = JSON.parse(value as string)
-        post.slug = slug
-        post.desc = post.description
+        if (!post) {
+            return c.notFound();
+        }
         return c.view('blogupdateform', {
             meta: {
                 title: blogTitle + ' - edit blog post',
@@ -161,16 +162,16 @@ export default function createBlogServer({
     app.put('/blog/:idx', async (c) => {
         const body = await c.req.text()
         const meta = await c.req.json()
+        const data: any = JSON.parse(body)
         const key = Date.now()
-        let value = await c.env.blog.put(c.req.param('idx'), body, {
-            metadata: {
-                title: meta.title,
-                desc: meta.description,
-                banner: meta.banner,
-                lang: meta.lang,
-                ts: key
-            }
-        });
+        let value = await db.update(blog).set({
+            title: meta.title,
+            markdown: data.markdown,
+            desc: meta.description,
+            banner: meta.banner,
+            lang: meta.lang,
+            ts: key
+        }).where(eq(blog.slug, c.req.param('idx')));
         return c.json({
             status: 0,
             data: value
@@ -178,7 +179,7 @@ export default function createBlogServer({
     })
 
     app.delete('/blog/:idx', async (c) => {
-        await c.env.blog.delete(c.req.param('idx'));
+        await db.delete(blog).where(eq(blog.slug, c.req.param('idx')));
 
         return c.json({
             status: 0
@@ -186,25 +187,25 @@ export default function createBlogServer({
     })
 
     app.get('/blogs', async (c) => {
-        const value = await c.env.blog.list({
+        const values = await db.query.blog.findMany({
             limit: parseInt(c.req.query('limit') || '18'),
-            cursor: c.req.query('cursor'),
+            where: lt(blog.id, parseInt(c.req.query('cursor') || '99999999')),
+            orderBy: [asc(blog.id)],
         });
 
         const posts: BlogPost[] = []
-        value.keys.forEach((e) => {
-            const meta: BlogPost = e.metadata as BlogPost
+        values.forEach((v) => {
             posts.push({
-                slug: e.name,
-                title: meta.title,
-                desc: meta.desc,
-                banner: meta.banner,
-                ts: meta.ts,
+                slug: v.slug,
+                title: v.title,
+                desc: v.desc,
+                banner: v.banner,
+                ts: v.ts,
             })
         })
-        let cursor = ''
-        if (!value.list_complete) {
-            cursor = value.cursor
+        let cursor = 0
+        if (values.length > 0) {
+            cursor = values[values.length - 1].id
         }
         return c.view('blogs', {
             meta: {
@@ -226,23 +227,26 @@ export default function createBlogServer({
 
     app.get('/article/:idx', async (c) => {
         const slug = c.req.param('idx')
-        const value = await c.env.blog.getWithMetadata(slug);
-        const post = JSON.parse(value.value as string)
-        const postMeta = value.metadata as BlogPost
+        const post = await db.query.blog.findFirst({
+            where: eq(blog.slug, slug)
+        });
+        if (!post) {
+            return c.notFound();
+        }
 
-        const listValue = await c.env.blog.list({
+        const listValue = await db.query.blog.findMany({
             limit: 3,
+            orderBy: [asc(blog.id)],
         });
 
         const posts: BlogPost[] = []
-        listValue.keys.forEach((e) => {
-            const meta: BlogPost = e.metadata as BlogPost
+        listValue.forEach((v) => {
             posts.push({
-                slug: e.name,
-                title: meta.title,
-                desc: meta.desc,
-                banner: meta.banner,
-                ts: meta.ts,
+                slug: v.slug,
+                title: v.title,
+                desc: v.desc,
+                banner: v.banner,
+                ts: v.ts,
             })
         })
         const url = `${urlPrefix}/article/${slug}`
@@ -250,7 +254,7 @@ export default function createBlogServer({
             meta: {
                 lang: post.lang,
                 title: post.title,
-                description: post.description,
+                description: post.desc,
                 open_graph: {
                     site_name: blogTitle,
                     title: post.title,
@@ -259,8 +263,8 @@ export default function createBlogServer({
                 },
                 article: {
                     publisher: publisher,
-                    publishedAt: (new Date(postMeta.ts)).toISOString(),
-                    modifiedAt: (new Date(postMeta.ts)).toISOString(),
+                    publishedAt: (new Date(post.ts)).toISOString(),
+                    modifiedAt: (new Date(post.ts)).toISOString(),
                 }
             },
             props: {

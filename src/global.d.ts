@@ -71,4 +71,17 @@ declare global {
   interface Window {
       _hono_view: ViewData;
   }
+  namespace NodeJS {
+    interface ProcessEnv {
+      APP_PORT: string;
+      DATABASE_HOST: string;
+      DATABASE_PORT: string;
+      DATABASE_USERNAME: string;
+      DATABASE_PASSWORD: string;
+      DATABASE_NAME: string;
+      DATABASE_TABLE_PREFIX: string;
+      BLOG_USERNAME: string;
+      BLOG_PASSWORD: string;
+    }
+  }
 }

@@ -5,7 +5,7 @@ import Article from "@/components/Article"
 
 type AppProps = {
     posts: BlogPost[],
-    cursor: string
+    cursor: number,
 }
 
 export default function Blogs({ posts, cursor }: AppProps) {
@@ -22,7 +22,7 @@ export default function Blogs({ posts, cursor }: AppProps) {
             </a>
           ))}
         </div>
-        {cursor && <div className="flex flex-row justify-center my-4">
+        {cursor > 0 && <div className="flex flex-row justify-center my-4">
             <a href={`/blogs?cursor=${cursor}`} title="next page">
                 <Button>
                     <ChevronRight className="mr-2 h-4 w-4" /> Next Page

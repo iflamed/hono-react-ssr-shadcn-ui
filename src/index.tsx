@@ -1,4 +1,6 @@
+import './config/env'
 import { Hono } from 'hono'
+import { serveStatic } from '@hono/node-server/serve-static'
 import { renderer } from './renderer'
 import initView from './view'
 import { ViewRenderer } from './middleware'
@@ -9,6 +11,7 @@ const app = new Hono()
 
 app.use(renderer)
 app.use(ViewRenderer)
+app.use('/static/*', serveStatic({ root: './dist' }))
 
 app.get('/', (c) => {
   return c.view('hello', {
