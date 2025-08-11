@@ -1,15 +1,15 @@
 {
-  "_vendor-DiI5zcXI.js": {
-    "file": "static/vendor-DiI5zcXI.js",
+  "_vendor-Bw-Fgtlk.js": {
+    "file": "static/vendor-Bw-Fgtlk.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-DfgPWsPu.js",
+    "file": "static/client-fF0H2itl.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-DiI5zcXI.js"
+      "_vendor-Bw-Fgtlk.js"
     ],
     "css": [
       "static/client-CYqWdZ0t.css"

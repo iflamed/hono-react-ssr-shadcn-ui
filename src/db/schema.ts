@@ -5,11 +5,11 @@ const mysqlTable = mysqlTableCreator((name) => `${env.DATABASE_TABLE_PREFIX}_${n
 
 export const blog = mysqlTable('blogs', {
   id: int().autoincrement().primaryKey(),
-  slug: varchar({ length: 255 }).notNull(),
+  slug: varchar({ length: 191 }).notNull(),
   title: varchar({ length: 255 }).notNull(),
   desc: varchar({ length: 255 }).notNull(),
   banner: varchar({ length: 255 }).notNull(),
-  markdown: text().default("").notNull(),
+  markdown: text(),
   lang: varchar({ length: 255 }).notNull(),
   ts: bigint({ mode: 'number', unsigned: true }).notNull(),
 }, (table) => [
