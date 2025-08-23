@@ -15,4 +15,6 @@ i18n
     }
 )
 
+export const languages = Object.keys(files)
+
 export default i18n

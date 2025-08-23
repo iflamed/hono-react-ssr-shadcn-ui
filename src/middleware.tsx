@@ -3,8 +3,7 @@ import { languageDetector } from 'hono/language'
 import { ViewData } from "./global"
 import { getViewByName } from "./renderer"
 import manifest from './lib/manifest.json'
-import languages from './lib/languages.json'
-import i18n from "./locales"
+import i18n, { languages } from "./locales"
 
 export const ViewRenderer = createMiddleware(async (c, next) => {
     c.view = (name: string, view: ViewData) => {

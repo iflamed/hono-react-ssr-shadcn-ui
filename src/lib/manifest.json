@@ -1,18 +1,18 @@
 {
-  "_vendor-Bw-Fgtlk.js": {
-    "file": "static/vendor-Bw-Fgtlk.js",
+  "_vendor-Cp6zsAfO.js": {
+    "file": "static/vendor-Cp6zsAfO.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-fF0H2itl.js",
+    "file": "static/client-CDjeKJiD.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-Bw-Fgtlk.js"
+      "_vendor-Cp6zsAfO.js"
     ],
     "css": [
-      "static/client-CYqWdZ0t.css"
+      "static/client-B-pDU1g9.css"
     ]
   }
 }
