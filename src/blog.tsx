@@ -4,7 +4,8 @@ import { Renderer } from './renderer'
 import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
 import { BlogPost, } from './global'
 import slugify from '@sindresorhus/slugify'
-import { getPath } from './lib/utils'
+import { getPath } from './locales'
+import ISO6391 from 'iso-639-1'
 import db from './db'
 import { blog } from './db/schema'
 import { asc, lt, eq } from 'drizzle-orm'
@@ -17,6 +18,8 @@ type Options = {
     urlPrefix: string
     publisher: string
 }
+
+const languages = ISO6391.getLanguages(ISO6391.getAllCodes())
 
 export default function createBlogServer({
     defaultOGImage,
@@ -101,7 +104,8 @@ export default function createBlogServer({
                 }
             },
             props: {
-                post: post
+                post,
+                languages
             }
         })
     })
@@ -157,7 +161,8 @@ export default function createBlogServer({
                 }
             },
             props: {
-                post: post,
+                post,
+                languages,
             }
         })
     })

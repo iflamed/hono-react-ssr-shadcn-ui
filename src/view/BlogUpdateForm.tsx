@@ -16,10 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { BlogPost } from '@/global'
+import { BlogPost, Language } from '@/global'
 import axios from 'axios'
 
-export default function BlogUpdateForm({ post }: { post: BlogPost }) {
+export default function BlogUpdateForm({ post, languages }: { post: BlogPost, languages: Language[] }) {
     const [lang, setLang] = useState(post.lang || 'en')
     const [title, setTitle] = useState(post.title)
     const [excerpt, setExcerpt] = useState(post.desc)
@@ -117,10 +117,7 @@ export default function BlogUpdateForm({ post }: { post: BlogPost }) {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Languages</SelectLabel>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="ja">Japanese</SelectItem>
+                {languages.map((lang) => (<SelectItem value={lang.code} key={lang.code}>{lang.name}({lang.nativeName})</SelectItem>))}
               </SelectGroup>
             </SelectContent>
           </Select>

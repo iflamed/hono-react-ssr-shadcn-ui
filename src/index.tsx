@@ -5,7 +5,7 @@ import { Renderer } from './renderer'
 import initView from './view'
 import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
 import createBlogServer from './blog'
-import { getPath } from './lib/utils'
+import { getPath } from './locales'
 
 initView()
 const app = new Hono({ getPath })
