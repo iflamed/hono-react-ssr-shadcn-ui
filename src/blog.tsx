@@ -1,12 +1,13 @@
 import { Hono } from 'hono'
 import { basicAuth } from 'hono/basic-auth'
-import { renderer } from './renderer'
-import { ViewRenderer } from './middleware'
+import { Renderer } from './renderer'
+import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
 import { BlogPost, } from './global'
 import slugify from '@sindresorhus/slugify'
+import { getPath } from './lib/utils'
 import db from './db'
 import { blog } from './db/schema'
-import { asc, lt, eq } from 'drizzle-orm';
+import { asc, lt, eq } from 'drizzle-orm'
 import env from './config/env'
 
 type Options = {
@@ -24,9 +25,11 @@ export default function createBlogServer({
     urlPrefix,
     publisher,
 }: Options) {
-    const app = new Hono()
+    const app = new Hono({ getPath })
 
-    app.use(renderer)
+    app.use(LanguageDetector)
+    app.use(Translatori18n)
+    app.use(Renderer)
     app.use(ViewRenderer)
     const author = basicAuth(
         {

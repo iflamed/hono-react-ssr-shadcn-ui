@@ -1,0 +1,14 @@
+{
+    "sign_up": "注册",
+    "sign_up_desc": "请输入您的信息以创建账户",
+    "first_name": "名字",
+    "last_name": "姓氏",
+    "email": "邮箱",
+    "password": "密码",
+    "create_account": "创建账户",
+    "sign_up_with_gitHub": "使用 GitHub 注册",
+    "sign_in": "登录",
+    "already_have_account": "已经有账户了吗？",
+    "articles": "文章",
+    "next_page": "下一页"
+}

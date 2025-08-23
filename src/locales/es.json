@@ -1,0 +1,14 @@
+{
+    "sign_up": "Registrarse",
+    "sign_up_desc": "Introduce tu información para crear una cuenta",
+    "first_name": "Nombre",
+    "last_name": "Apellido",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "create_account": "Crear una cuenta",
+    "sign_up_with_gitHub": "Registrarse con GitHub",
+    "sign_in": "Iniciar sesión",
+    "already_have_account": "¿Ya tienes una cuenta?",
+    "articles": "Artículos",
+    "next_page": "Página siguiente"
+}

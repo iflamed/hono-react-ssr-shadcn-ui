@@ -1,4 +1,5 @@
 import {} from 'hono'
+import { i18n } from 'i18next'
 
 interface BlogPost {
   slug: string
@@ -28,6 +29,7 @@ interface ViewMeta {
   article?: ArticleMeta
   chat?: string
   manifest?: Manifest
+  locale?: string
 }
 interface ViewData {
   name?: string,
@@ -57,6 +59,7 @@ interface SocialMedia {
 declare module 'hono' {
   interface Context {
     view(name:string, data: ViewData): Response | Promise<Response>
+    locale: i18n
   }
 }
 
