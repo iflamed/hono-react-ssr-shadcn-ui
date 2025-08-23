@@ -1,13 +1,16 @@
 import { Hono } from 'hono'
-import { renderer } from './renderer'
+import { Renderer } from './renderer'
 import initView from './view'
-import { ViewRenderer } from './middleware'
+import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
 import createBlogServer from './blog'
+import { getPath } from './lib/utils'
 
 initView()
-const app = new Hono()
+const app = new Hono({ getPath })
 
-app.use(renderer)
+app.use(LanguageDetector)
+app.use(Translatori18n)
+app.use(Renderer)
 app.use(ViewRenderer)
 
 app.get('/', (c) => {

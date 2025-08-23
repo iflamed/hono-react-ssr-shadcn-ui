@@ -22,7 +22,7 @@ export function storeViewByName(name: string, item: React.FC<any>):void {
     views.set(name, item)
 }
 
-export const renderer = reactRenderer(App, {
+export const Renderer = reactRenderer(App, {
   docType: true
 })
 

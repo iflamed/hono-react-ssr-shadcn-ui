@@ -1,9 +1,10 @@
 import { Hono } from 'hono'
 import { basicAuth } from 'hono/basic-auth'
-import { renderer } from './renderer'
-import { ViewRenderer } from './middleware'
+import { Renderer } from './renderer'
+import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
 import { BlogPost, } from './global'
 import slugify from '@sindresorhus/slugify'
+import { getPath } from './lib/utils'
 
 type Bindings = {
     blog: KVNamespace
@@ -26,9 +27,11 @@ export default function createBlogServer({
     urlPrefix,
     publisher,
 }: Options) {
-    const app = new Hono<{ Bindings: Bindings }>()
+    const app = new Hono<{ Bindings: Bindings }>({ getPath })
 
-    app.use(renderer)
+    app.use(LanguageDetector)
+    app.use(Translatori18n)
+    app.use(Renderer)
     app.use(ViewRenderer)
     const author = basicAuth(
         {
