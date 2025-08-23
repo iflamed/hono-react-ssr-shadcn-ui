@@ -1,6 +1,12 @@
 import {} from 'hono'
 import { i18n } from 'i18next'
+import { LanguageCode } from 'iso-639-1';
 
+interface Language {
+    code: LanguageCode;
+    name: string;
+    nativeName: string;
+}
 interface BlogPost {
   slug: string
   title: string
