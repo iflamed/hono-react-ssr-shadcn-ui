@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import languages from './languages.json'
+import { languages } from '../locales'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
