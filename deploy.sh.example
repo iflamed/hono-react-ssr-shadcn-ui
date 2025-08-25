@@ -8,7 +8,7 @@ scp ./tsconfig.json server:$DIR/tsconfig.json
 scp ./drizzle.config.ts server:$DIR/drizzle.config.ts
 scp ./package.json server:$DIR/package.json
 scp ./package-lock.json server:$DIR/package-lock.json
-scp ./.env.production.local server:$DIR/.env
+scp ./.env.local server:$DIR/.env
 ssh server "cd $DIR && npm install && npm run migrate"
 echo "\n"
 

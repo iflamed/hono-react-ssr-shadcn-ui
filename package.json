@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "echo \"export default false\" > ./src/config/is_prod.ts && vite",
-    "client": "vite --mode client",
+    "dev": "echo \"export default false\" > ./src/config/is_prod.ts && SERVER_MODE=local vite",
+    "client": "SERVER_MODE=local vite --mode client",
     "build": "$npm_execpath run version && vite build --mode client && cp -f ./dist/.vite/manifest.json ./src/lib/manifest.json && vite build",
     "preview": "node dist/index.js",
     "migrate": "drizzle-kit generate && drizzle-kit migrate",
     "deploy": "$npm_execpath run deploy:caitun && $npm_execpath run deploy:ruobiyi",
-    "deploy:caitun": "$npm_execpath run build && sh ./deploy.sh -c",
-    "deploy:ruobiyi": "$npm_execpath run build && sh ./deploy.sh -r",
+    "deploy:caitun": "SERVER_MODE=caitun $npm_execpath run build && sh ./deploy.sh -c",
+    "deploy:ruobiyi": "SERVER_MODE=ruobiyi $npm_execpath run build && sh ./deploy.sh -r",
     "version": "echo \"export default `date +'%s'`\" > ./src/config/build_time.ts && echo \"export default true\" > ./src/config/is_prod.ts"
   },
   "dependencies": {

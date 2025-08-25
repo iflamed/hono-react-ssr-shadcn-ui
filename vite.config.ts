@@ -5,7 +5,7 @@ import preserveDirectives from 'rollup-preserve-directives'
 import { defineConfig } from 'vite'
 import path from 'path'
 dotenv.config({
-  path: '.env.production.local'
+  path: '.env.' + process.env.SERVER_MODE
 })
 
 export default defineConfig(({ mode }) => {
