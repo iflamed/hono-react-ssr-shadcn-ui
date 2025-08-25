@@ -33,4 +33,7 @@ app.route('/', createBlogServer({
   publisher: 'https://x.com/dotcopilot_ai',
 }))
 
-export default app
+const finalApp = new Hono()
+finalApp.route('/', app)
+finalApp.route('/:lang/', app)
+export default finalApp
