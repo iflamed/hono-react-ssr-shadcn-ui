@@ -33,4 +33,10 @@ app.route('/', createBlogServer({
   publisher: 'https://x.com/dotcopilot_ai',
 }))
 
+app.get("/download", (c) => {
+  return c.json({
+    lang: c.get('language')
+  })
+})
+
 export default app
