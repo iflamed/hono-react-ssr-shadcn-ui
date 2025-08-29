@@ -33,9 +33,4 @@ app.route('/', createBlogServer({
   publisher: 'https://x.com/dotcopilot_ai',
 }))
 
-// routing automatically adapts to multilingual localization
-const finalApp = new Hono()
-finalApp.route('/', app)
-finalApp.route('/:lang', app)
-finalApp.route('/:lang/', app)
-export default finalApp
+export default app
