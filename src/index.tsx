@@ -38,9 +38,4 @@ app.route('/', createBlogServer({
 
 console.info('APP_PORT is: ', env.APP_PORT)
 
-// routing automatically adapts to multilingual localization
-const finalApp = new Hono()
-finalApp.route('/', app)
-finalApp.route('/:lang', app)
-finalApp.route('/:lang/', app)
-export default finalApp
+export default app
