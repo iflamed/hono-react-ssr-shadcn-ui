@@ -38,7 +38,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250415.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
-    "@hono/vite-dev-server": "^0.21.0",
+    "@hono/vite-dev-server": "^0.22.0",
     "@tailwindcss/postcss": "^4.1.4",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^24.0.3",
