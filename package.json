@@ -48,7 +48,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.3",
     "prettier": "^3.6.2",
-    "prettier-plugin-tailwindcss": "^0.6.13",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^4.1.11",
     "vite": "^7.1.1",
