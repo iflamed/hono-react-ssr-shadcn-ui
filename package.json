@@ -41,7 +41,7 @@
     "@hono/vite-dev-server": "^0.23.0",
     "@tailwindcss/postcss": "^4.1.4",
     "@tailwindcss/typography": "^0.5.15",
-    "@types/node": "^24.0.3",
+    "@types/node": "^25.0.2",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/remarkable": "^2.0.8",
