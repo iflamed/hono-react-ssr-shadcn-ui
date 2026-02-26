@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "^2.1.1",
-    "@hono/node-server": "^1.19.0",
+    "@hono/node-server": "^1.19.9",
     "@hono/react-renderer": "^1.0.1",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-select": "^2.2.6",
