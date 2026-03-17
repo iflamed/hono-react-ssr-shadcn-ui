@@ -6,7 +6,7 @@ import { BlogPost } from './global'
 import slugify from '@sindresorhus/slugify'
 import { getPath } from './locales'
 import ISO6391 from 'iso-639-1'
-import { marked } from "marked"
+import markdownit from 'markdown-it'
 
 type Bindings = {
     blog: KVNamespace
@@ -254,7 +254,8 @@ export default function createBlogServer({
                 ts: meta.ts,
             })
         })
-        const article = `<h1>${post.title}</h1>` + marked.parse(post.markdown || '', {
+        const md = markdownit()
+        const article = `<h1>${post.title}</h1>` + md.render(post.markdown || '', {
             async: false
         })
         const url = `${urlPrefix}/article/${slug}`
