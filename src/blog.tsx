@@ -254,7 +254,7 @@ export default function createBlogServer({
                 ts: meta.ts,
             })
         })
-        const article = marked.parse(post.markdown || '', {
+        const article = `<h1>${post.title}</h1>` + marked.parse(post.markdown || '', {
             async: false
         })
         const url = `${urlPrefix}/article/${slug}`
