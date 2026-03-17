@@ -1,8 +1,8 @@
 import Article from "@/components/Article"
 import SocialShare from "@/components/SocialShare"
 import { BlogPost } from "@/global"
-import { Remarkable } from 'remarkable'
-const md = new Remarkable('commonmark')
+import { marked } from "marked"
+import sanitizeHtml from 'sanitize-html'
 
 export default function ShowPost({
     post, posts, tags, title, url, image
@@ -14,7 +14,12 @@ export default function ShowPost({
     url: string,
     image: string
 }) {
-    const article = `<h1>${post.title}</h1>` + md.render(post.markdown || '')
+    const md = marked.parse(post.markdown || '', {
+        async: false
+    })
+    const article = `<h1>${post.title}</h1>` + sanitizeHtml(md, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ])
+    })
     return <div className="w-full min-h-screen p-2 bg-orange-50 flex flex-col justify-start items-center">
         <article className="w-full prose prose-zinc lg:prose-xl prose-h1:text-4xl prose-pre:whitespace-normal prose-code:whitespace-break-spaces prose-li:break-words" dangerouslySetInnerHTML={{
             __html: article,

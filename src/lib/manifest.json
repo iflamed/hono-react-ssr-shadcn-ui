@@ -1,15 +1,15 @@
 {
-  "_vendor-MtxUahMR.js": {
-    "file": "static/vendor-MtxUahMR.js",
+  "_vendor-DvOqNtoC.js": {
+    "file": "static/vendor-DvOqNtoC.js",
     "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-Dztd3nxF.js",
+    "file": "static/client-aETEqeCw.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-MtxUahMR.js"
+      "_vendor-DvOqNtoC.js"
     ],
     "css": [
       "static/client-BeavXFLz.css"
