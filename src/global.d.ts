@@ -1,5 +1,4 @@
-import {} from 'hono'
-import { i18n } from 'i18next'
+import { I18nInstance } from '@/lib/i18n'
 import { LanguageCode } from 'iso-639-1';
 
 interface Language {
@@ -65,7 +64,7 @@ interface SocialMedia {
 declare module 'hono' {
   interface Context {
     view(name:string, data: ViewData): Response | Promise<Response>
-    locale: i18n
+    locale: I18nInstance
   }
 }
 

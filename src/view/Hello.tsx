@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "@/lib/i18n"
 import { toast } from "sonner"
 
 type AppProps = {
