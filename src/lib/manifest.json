@@ -1,29 +1,18 @@
 {
-  "_rolldown-runtime-CQG1Cqs8.js": {
-    "file": "static/rolldown-runtime-CQG1Cqs8.js",
-    "name": "rolldown-runtime"
-  },
-  "_vendor-BfKyTEja.js": {
-    "file": "static/vendor-BfKyTEja.js",
-    "name": "vendor",
-    "imports": [
-      "_rolldown-runtime-CQG1Cqs8.js"
-    ],
-    "dynamicImports": [
-      "_vendor-BfKyTEja.js"
-    ]
+  "_vendor-MtxUahMR.js": {
+    "file": "static/vendor-MtxUahMR.js",
+    "name": "vendor"
   },
   "src/client.tsx": {
-    "file": "static/client-DfGZC3sk.js",
+    "file": "static/client-Dztd3nxF.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
-      "_rolldown-runtime-CQG1Cqs8.js",
-      "_vendor-BfKyTEja.js"
+      "_vendor-MtxUahMR.js"
     ],
     "css": [
-      "static/client-B1ua_L4Q.css"
+      "static/client-BeavXFLz.css"
     ]
   }
 }
