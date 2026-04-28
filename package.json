@@ -49,7 +49,7 @@
     "node-gyp": "^12.2.0",
     "postcss": "^8.5.3",
     "prettier": "^3.7.4",
-    "prettier-plugin-tailwindcss": "^0.7.1",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "rollup-preserve-directives": "^1.1.1",
     "tailwindcss": "^4.1.11",
     "vite": "^8.0.0",
