@@ -3,7 +3,9 @@ import { languageDetector } from 'hono/language'
 import { ViewData } from "./global"
 import { getViewByName } from "./renderer"
 import manifest from './lib/manifest.json'
-import i18n, { languages } from "./locales"
+import { languages } from "./locales"
+import { createI18n } from "./lib/i18n"
+import files from "./locales/files"
 
 export const ViewRenderer = createMiddleware(async (c, next) => {
     c.view = (name: string, view: ViewData) => {
@@ -17,8 +19,12 @@ export const ViewRenderer = createMiddleware(async (c, next) => {
 })
 
 export const Translatori18n = createMiddleware(async (c, next) => {
-    c.locale = i18n.cloneInstance()
-    c.locale.changeLanguage(c.get('language') || 'en')
+    c.locale = createI18n({
+        lang: c.get('language') || 'en',
+        resources: files,
+        fallbackLang: 'en',
+        defaultNS: 'translation',
+    })
     await next()
 })
 

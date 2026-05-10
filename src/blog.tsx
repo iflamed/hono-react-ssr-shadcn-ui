@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { basicAuth } from 'hono/basic-auth'
 import { Renderer } from './renderer'
 import { LanguageDetector, Translatori18n, ViewRenderer } from './middleware'
-import { BlogPost, } from './global'
+import { BlogPost } from './global'
 import slugify from '@sindresorhus/slugify'
 import { getPath } from './locales'
 import ISO6391 from 'iso-639-1'
@@ -10,6 +10,7 @@ import db from './db'
 import { blog } from './db/schema'
 import { asc, lt, eq } from 'drizzle-orm'
 import env from './config/env'
+import markdownit from 'markdown-it'
 
 type Options = {
     defaultOGImage: string
@@ -257,6 +258,10 @@ export default function createBlogServer({
                 ts: v.ts,
             })
         })
+        const md = markdownit()
+        const article = `<h1>${post.title}</h1>` + md.render(post.markdown || '', {
+            async: false
+        })
         const url = `${urlPrefix}/article/${slug}`
         return c.view('post', {
             meta: {
@@ -280,7 +285,7 @@ export default function createBlogServer({
                 image: post.banner,
                 tags: ['hichly', 'buildinpublic', 'indiedev', 'marketing'],
                 url,
-                post,
+                article,
                 posts,
             }
         })

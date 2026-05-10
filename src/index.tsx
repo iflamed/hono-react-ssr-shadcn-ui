@@ -12,6 +12,7 @@ const app = new Hono({ getPath })
 
 app.use(LanguageDetector)
 app.use(Translatori18n)
+
 app.use(Renderer)
 app.use(ViewRenderer)
 app.use('/static/*', serveStatic({ root: './dist' }))

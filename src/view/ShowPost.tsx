@@ -1,20 +1,17 @@
 import Article from "@/components/Article"
 import SocialShare from "@/components/SocialShare"
 import { BlogPost } from "@/global"
-import { Remarkable } from 'remarkable'
-const md = new Remarkable('commonmark')
 
 export default function ShowPost({
-    post, posts, tags, title, url, image
+    posts, tags, title, url, image, article
 } : {
-    post: BlogPost,
     posts: BlogPost[],
     tags: string[],
     title: string,
     url: string,
-    image: string
+    image: string,
+    article: string
 }) {
-    const article = `<h1>${post.title}</h1>` + md.render(post.markdown || '')
     return <div className="w-full min-h-screen p-2 bg-orange-50 flex flex-col justify-start items-center">
         <article className="w-full prose prose-zinc lg:prose-xl prose-h1:text-4xl prose-pre:whitespace-normal prose-code:whitespace-break-spaces prose-li:break-words" dangerouslySetInnerHTML={{
             __html: article,

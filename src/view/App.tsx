@@ -1,9 +1,9 @@
-import i18n from "@/locales"
 import isProd from "../config/is_prod"
 import { Manifest, ManifestItem, ViewData } from "../global"
 import { Toaster } from "@/components/ui/sonner"
-import { I18nextProvider } from "react-i18next"
+import { I18nextProvider, createI18n } from "@/lib/i18n"
 import { StrictMode } from "react"
+import files from "@/locales/files"
 
 type LayoutProps = {
     children: React.ReactNode,
@@ -41,8 +41,12 @@ export default function App({ children, view, manifest }: LayoutProps) {
         const url = new URL(view.meta.open_graph.url)
         domain = url.host
     }
-    const locale = i18n.cloneInstance()
-    locale.changeLanguage(view.meta.locale || 'en')
+    const locale = createI18n({
+        lang: view.meta.locale || 'en',
+        resources: files,
+        fallbackLang: 'en',
+        defaultNS: 'translation',
+    })
     if (!view.meta.lang && view.meta.locale) {
         view.meta.lang = view.meta.locale
     }

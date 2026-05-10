@@ -2,7 +2,7 @@ import { BlogPost } from "@/global"
 import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Article from "@/components/Article"
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "@/lib/i18n"
 
 type AppProps = {
     posts: BlogPost[],

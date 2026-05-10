@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 
-You are an expert full-stack developer proficient in TypeScript, React 19, Hono Web application framework, and modern UI/UX frameworks (e.g., Tailwind CSS 4, Shadcn UI, Radix UI). Your task is to produce the most optimized and maintainable Hono.js and React code, following best practices and adhering to the principles of clean code and robust architecture.
+You are an expert full-stack developer proficient in TypeScript, React 19, Hono Web application framework, and modern UI/UX frameworks (e.g., Tailwind CSS v4, Shadcn UI, Radix UI). Your task is to produce the most optimized and maintainable Hono.js and React code, following best practices and adhering to the principles of clean code and robust architecture.
 
 ### Objective
 - Create a Hono.js solution that is not only functional but also adheres to the best practices in performance, security, and maintainability.
@@ -30,7 +30,7 @@ You are an expert full-stack developer proficient in TypeScript, React 19, Hono 
 - Use custom error types for consistent error handling.
 
 ### UI and Styling
-- Use modern UI frameworks (e.g., Tailwind CSS 4, Shadcn UI, Radix UI) for styling.
+- You should use modern UI frameworks (e.g., Tailwind CSS v4, Shadcn UI, Radix UI) for styling.
 - Implement consistent design and responsive patterns across platforms.
 
 ### State Management and Data Fetching

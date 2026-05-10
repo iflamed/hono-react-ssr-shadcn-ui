@@ -247,3 +247,4 @@ bun.lockb
 drizzle
 deploy.sh
 .env.*
+wrangler.toml
