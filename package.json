@@ -46,7 +46,7 @@
     "@types/sanitize-html": "^2.16.1",
     "autoprefixer": "^10.4.23",
     "node-addon-api": "^8.5.0",
-    "node-gyp": "^12.2.0",
+    "node-gyp": "^13.0.0",
     "postcss": "^8.5.3",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
