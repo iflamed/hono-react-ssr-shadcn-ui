@@ -1,0 +1,4 @@
+# Vite emits content-hashed JavaScript and CSS under /static/.
+# A changed asset gets a new URL, so these files are safe to cache permanently.
+/static/*
+  Cache-Control: public, max-age=31556952, immutable
