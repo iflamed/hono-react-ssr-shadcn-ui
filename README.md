@@ -1,81 +1,77 @@
-![Hono,React,SSR,Shadcn/ui,Cloudflare Pages,Cursor](https://cdn.dotcopilot.ai/images/admin-c25fca60-b075-4884-896b-f3ba5ac94744-1744827668519.webp)
-# Hono-react-ssr-shadcn-ui
+![Hono, React, SSR, Shadcn UI and Node.js](https://cdn.dotcopilot.ai/images/admin-c25fca60-b075-4884-896b-f3ba5ac94744-1744827668519.webp)
 
-Support `Tailwindcss 4.1` `React 19.1` `Vite 8` `i18n` and `Cursor - The AI Code Editor`
+# Hono React SSR for Node.js
 
-> Template code for Honojs with React SSR, Shadcn-UI and a simple blog which running on Cloudflare Pages.
+A Hono + React 19 SSR template for Node.js with Tailwind CSS 4, Shadcn UI, Vite 8, i18n, Drizzle ORM and MySQL.
 
-## Online Demo
-Home page: [https://hono-react-ssr-shadcn-ui.pages.dev/](https://hono-react-ssr-shadcn-ui.pages.dev/)
+## Develop
 
-Blogs Page: [https://hono-react-ssr-shadcn-ui.pages.dev/blogs](https://hono-react-ssr-shadcn-ui.pages.dev/blogs)
+Install dependencies, configure `.env.local`, and start the Vite development server:
 
-## Develop and Deploy
-
-Start the development server
 ```shell
 npm install
-# Start the dev server
+npm run typecheck
 npm run dev
-# Start the client server
-npm run client
 ```
 
-Deploy to Cloudflare Pages
+Required environment variables:
+
 ```shell
-npm run deploy
+APP_PORT="3000"
+DATABASE_HOST="127.0.0.1"
+DATABASE_PORT="3306"
+DATABASE_USERNAME="app"
+DATABASE_PASSWORD="change-me"
+DATABASE_NAME="hono_blog"
+DATABASE_TABLE_PREFIX="hono"
+BLOG_USERNAME="admin"
+BLOG_PASSWORD="change-me"
 ```
+
+Environment files are loaded in this order: `.env.${SERVER_MODE}`, `.env.local`, then `.env`. Missing database or administrator credentials fail fast at startup.
+
+## Build and run
+
+```shell
+npm run build
+npm run preview
+```
+
+The production build is split into two directories:
+
+- `dist/client`: hashed browser JavaScript, CSS, the Vite manifest and public assets.
+- `dist/server`: the Node.js Hono entry plus lazy SSR page and route-handler chunks.
+
+The Node server renders HTML dynamically. Requests under `/static/*` are served from `dist/client` with a one-year immutable cache policy because every generated filename contains a content hash.
+
+## Page-level code splitting
+
+Pages are registered as literal dynamic imports in `src/view-loaders.ts`. The browser hydrates only the current page, while SSR loads the same page module on demand. Production HTML resolves `src/lib/manifest.json` and emits only the current page's stylesheet and module preload dependency closure.
+
+Blog list, editor, mutation and article handlers are also loaded dynamically from `src/features/blog`. MySQL, Drizzle, React and dotenv remain external Node dependencies instead of being copied into the server bundle.
+
+See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for implementation details and verified output sizes.
+
+## Database
+
+The blog uses MySQL through Drizzle ORM. The schema is defined in `src/db/schema.ts`.
+
+Generate and apply migrations with:
+
+```shell
+npm run migrate
+```
+
+The included `deploy.sh.example` shows the expected build upload and migration workflow. Copy it to `deploy.sh`, customize its paths and hosts, and keep the real script and environment files out of version control.
 
 ## Blog configuration
 
-### Blog Database
-We use Cloudflare's KV-Namespace to store articles.
-You can create KV-Namespace with this command:
-```shell
-npx wrangler kv namespace create blog
-```
+Open Graph defaults are configured where `createBlogServer()` is registered in `src/index.tsx`. `urlPrefix` is optional; without it, canonical URLs use the current request origin.
 
-This command will output the KV-Namespace configuration like this:
-```text
-[[kv_namespaces]]
-binding = "blog"
-id = "8617f8968998499bb3db425063f8f11d"
-```
+Routes:
 
-Then you should copy the KV-Namespace configuration to `wrangler.toml`
-
-### Blog's Admin
-You can change the open graph infomation of you blog server configuration, just need find these code in the `index.tsx` file like below:
-```javascript
-app.route('/', createBlogServer({
-  defaultOGImage: 'https://aicanvas.app/statics/uploads/1732953286728187318_blog_banner.jpg',
-  blogTitle: 'Hono React Blog',
-  blogDescription: 'A place to share stories about Honojs.',
-  urlPrefix: 'https://hono-react-ssr-shadcn-ui.pages.dev',
-  publisher: 'https://x.com/dotcopilot_ai',
-}))
-```
-
-Then set the password of your blog's administrator, just put below environment to your `.dev.vars` file when it is developing mode.
-```shell
-BLOG_USERNAME="admin"
-BLOG_PASSWORD="123456"
-```
-When you deploy the code, you should put this configurations to `wrangler.toml` or set from Cloudflare Page's dashboard.
-
-### Blog's Routes
-
-For Admin: [/blog/list](https://hono-react-ssr-shadcn-ui.pages.dev/blog/list)
-
-For Users: [/blogs](https://hono-react-ssr-shadcn-ui.pages.dev/blogs)
-
-### Blog Example
-TapAI Blog: [https://tapai.aicanvas.app/blogs](https://tapai.aicanvas.app/blogs)
-
-## Sites build with this repo?
-
-1. TapAI: [https://tapai.aicanvas.app/](https://tapai.aicanvas.app/), a site provide a iOS shortcut to boost your productivity, which you can use ChatGPT with TapAI to add calendar, reminder, note easily.
-
-2. Hichly: [https://hichly.com](https://hichly.com), Hichly is the ultimate platform for sharing and refining niche ideas with community feedback to turn your concepts into reality.
-
-3. Dot Copilot: [https://dotcopilot.ai](https://dotcopilot.ai), a non-intrusive and customizable Android AI assistant that simplifies your daily tasks. Parse receipts, manage to-dos, and more—Dot Copilot is here to help without interrupting your workflow.
+- `/blogs`: public article list.
+- `/article/:slug`: public SSR article page.
+- `/blog/list`: authenticated administrator list.
+- `/blog/new` and `/blog/edit/:slug`: authenticated editor pages.
+- `/blog/create` and `/blog/:slug`: authenticated mutation APIs.

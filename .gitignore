@@ -248,3 +248,4 @@ drizzle
 deploy.sh
 .env.*
 wrangler.toml
+.secrets

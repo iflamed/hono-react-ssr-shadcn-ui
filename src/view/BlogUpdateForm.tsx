@@ -16,8 +16,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { BlogPost, Language } from '@/global'
-import axios from 'axios'
+import type { BlogPost, Language } from '@/global'
+
+const requestBlogMutation = async (
+  url: string,
+  method: 'POST' | 'PUT' | 'DELETE',
+  body?: Record<string, string>,
+) => {
+  const response = await fetch(url, {
+    method,
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Blog request failed with status ${response.status}`)
+  }
+}
 
 export default function BlogUpdateForm({ post, languages }: { post: BlogPost, languages: Language[] }) {
     const [lang, setLang] = useState(post.lang || 'en')
@@ -52,7 +67,7 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
   
       try {
         if (post.slug) {
-            await axios.put(`/blog/${post.slug}`, {
+            await requestBlogMutation(`/blog/${post.slug}`, 'PUT', {
                 description: excerpt,
                 banner: imageUrl,
                 markdown: markdown,
@@ -60,7 +75,7 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
                 title,
             })
         } else {
-            await axios.post(`/blog/create`, {
+            await requestBlogMutation('/blog/create', 'POST', {
                 description: excerpt,
                 banner: imageUrl,
                 markdown: markdown,
@@ -72,7 +87,7 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
   
         // Redirect to blog list page after successful update
         document.location.href = '/blog/list'
-      } catch (err) {
+      } catch {
         setError("Failed to update blog post. Please try again.")
       } finally {
         setIsLoading(false)
@@ -80,11 +95,19 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
     }
 
     const deletePost = async () => {
-        if (window.confirm("Do you really want to delete this post?")) {
-            axios.delete(`/blog/${post.slug}`).then(() => {
-                document.location.href = '/blog/list'
-            })
-        }          
+        if (!post.slug || !window.confirm("Do you really want to delete this post?")) return
+
+        setError(null)
+        setIsLoading(true)
+
+        try {
+            await requestBlogMutation(`/blog/${post.slug}`, 'DELETE')
+            document.location.href = '/blog/list'
+        } catch {
+            setError("Failed to delete blog post. Please try again.")
+        } finally {
+            setIsLoading(false)
+        }
     }
   
     return (
@@ -178,7 +201,7 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
             <Button type="submit" className="w-48" disabled={isLoading}>
             {isLoading ? 'Updating...' : 'Save Blog Post'}
             </Button>
-            {post.slug && <Button type="button" className="w-48" variant="destructive" onClick={deletePost}>
+            {post.slug && <Button type="button" className="w-48" variant="destructive" onClick={deletePost} disabled={isLoading}>
                 Delete
             </Button>}
         </div>
