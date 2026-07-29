@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 import build from "@hono/vite-build/node";
-import devServer from "@hono/vite-dev-server";
+import devServer, {
+  defaultOptions as devServerDefaults,
+} from "@hono/vite-dev-server";
 import preserveDirectives from "rollup-preserve-directives";
 import path from "node:path";
 import { defineConfig } from "vite";
@@ -71,6 +73,10 @@ export default defineConfig(({ mode }) => {
       }),
       devServer({
         entry: "src/index.tsx",
+        exclude: [
+          ...devServerDefaults.exclude,
+          /^\/src\/.*\.(?:avif|gif|jpe?g|json|otf|png|svg|ttf|wasm|webp|woff2?)$/,
+        ],
       }),
     ],
     build: {

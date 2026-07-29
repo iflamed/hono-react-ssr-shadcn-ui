@@ -115,6 +115,14 @@ The browser entry does not import `@hono/react-renderer` or `react-dom/server`. 
 
 The browser receives only the active view name, metadata, and props. It does not receive the full Vite manifest. Inline JSON escapes characters that could terminate the script element.
 
+### 4.1 Language-prefixed routing
+
+The Node router supports explicit prefixes such as `/zh/`, `/zh/blogs`, and `/es/article/:slug`. `getPath()` removes the first segment only when it matches a supported language, allowing Hono to match the underlying application route while the raw URL remains available to language detection.
+
+The configured detection order is `querystring → path → cookie → header`. An initial `/zh/...` request detects `zh` from the path and caches it in the `language` cookie. A later unprefixed `/blogs` or `/article/...` request has no valid path locale, so detection continues and resolves `zh` from the cookie. Internal links therefore do not need to repeat `/zh`.
+
+The cookie uses `Path=/`. Local `npm run dev` uses HTTP and therefore sets `secure: false`; production uses `secure: true` and must be exposed over HTTPS. Vite `/static/*` assets remain root-relative and do not participate in language detection.
+
 ## 5. Minimal View Registration
 
 `src/view-loaders.ts` contains configuration only:
@@ -292,7 +300,7 @@ The merged production build was verified with Node.js 26.5.0 and Vite 8.1.5.
 | BlogList page | 1.43 KB | 0.69 KB |
 | ShowPost page | 34.75 KB | 12.75 KB |
 | BlogUpdateForm page | 91.72 KB | 31.03 KB |
-| Global CSS | 56.03 KB | 9.56 KB |
+| Global CSS | 56.00 KB | 9.55 KB |
 
 The React runtime is a stable shared dependency and is approximately 68.91 KB after gzip. Splitting packages that every hydrated page always needs would not reduce the page dependency closure.
 
@@ -300,7 +308,7 @@ The React runtime is a stable shared dependency and is approximately 68.91 KB af
 
 | Output | Raw size | Gzip size |
 | --- | ---: | ---: |
-| Node entry | 53.15 KB | 19.96 KB |
+| Node entry | 53.30 KB | 20.00 KB |
 | Database adapter | 0.85 KB | 0.50 KB |
 | List handlers | 0.83 KB | 0.37 KB |
 | Editor handlers | 10.15 KB | 4.25 KB |
@@ -321,6 +329,9 @@ The compiled Node preview was started with valid local MySQL configuration and v
 - the home document preloaded `Hello` and shared dependencies but not the blog page;
 - the blogs document preloaded `Blogs` and its actual dependency closure;
 - the hashed client entry returned `Cache-Control: public, max-age=31556952, immutable`.
+- `/zh/`, `/zh/blogs`, and `/es/blogs` returned localized SSR HTML;
+- `/zh/blog/list` preserved authentication behavior and returned `401` without credentials;
+- a `/zh/...` response stored the site-wide `language=zh` cookie, and a later unprefixed page continued to render in Chinese.
 
 ## 13. Adding a Page
 
@@ -355,6 +366,8 @@ npm run typecheck
 npm run build
 npm run preview
 ```
+
+`npm run dev` combines Vite with the Hono development server. The Hono plugin must exclude source JSON, image, font, and WASM requests under `/src` so imports such as `zh.json?import` continue to Vite instead of being treated as Hono application routes. `vite.config.ts` extends the plugin defaults with these source-asset patterns. `npm run client` is handled directly by Vite.
 
 `SERVER_MODE` selects `.env.${SERVER_MODE}` for environment-specific builds. The included `deploy.sh.example` demonstrates uploading build output and migration files, installing dependencies remotely, applying migrations, and restarting a process supervisor.
 

@@ -130,6 +130,14 @@ hydration 数据只包含：
 
 内联 JSON 会转义 `<`、Unicode 行分隔符等特殊字符，避免 `</script>` 截断内联脚本。
 
+### 5.1 带语言前缀的路由
+
+Node 路由支持 `/zh/`、`/zh/blogs`、`/es/article/:slug` 等显式语言前缀。`getPath()` 只在首段是受支持语言时去除前缀用于 Hono 路由匹配，原始 URL 仍用于语言检测。
+
+`languageDetector` 的检测顺序配置为 `querystring → path → cookie → header`。首次访问 `/zh/...` 时从 path 得到 `zh` 并写入 `language` Cookie；后续访问不带前缀的 `/blogs` 或 `/article/...` 时，path 没有有效语言，检测流程继续从 Cookie 得到 `zh`。因此站内链接不需要重复添加 `/zh`。
+
+Cookie 使用 `Path=/`。本地 `npm run dev` 通过 HTTP 运行，因此设置 `secure: false`；生产构建设置 `secure: true`，要求公开部署使用 HTTPS。Vite 的 `/static/*` 资源始终使用根路径，不参与语言检测。
+
 ## 6. 最小视图注册与页面动态 import
 
 `src/view-loaders.ts` 只保留配置：
@@ -319,7 +327,7 @@ Cache-Control: public, max-age=31556952, immutable
 | BlogList | 1.43 KB | 0.69 KB |
 | ShowPost | 34.75 KB | 12.75 KB |
 | BlogUpdateForm | 91.72 KB | 31.03 KB |
-| Global CSS | 56.03 KB | 9.56 KB |
+| Global CSS | 56.00 KB | 9.55 KB |
 
 `react-runtime` 原始体积大，但 gzip 后约 68.91 KB，而且是页面真正共享、低频变化并可长期缓存的依赖。继续拆成多个始终同时需要的 runtime 不会降低页面依赖闭包。
 
@@ -327,7 +335,7 @@ Cache-Control: public, max-age=31556952, immutable
 
 | 产物 | 原始大小 | gzip |
 | --- | ---: | ---: |
-| Node entry | 53.15 KB | 19.96 KB |
+| Node entry | 53.30 KB | 20.00 KB |
 | DB adapter chunk | 0.85 KB | 0.50 KB |
 | List handlers | 0.83 KB | 0.37 KB |
 | Editor handlers | 10.15 KB | 4.25 KB |
@@ -343,8 +351,8 @@ Cache-Control: public, max-age=31556952, immutable
 - `main` 的简化视图映射和自动 manifest 匹配已合并到 `node-server`。
 - 5 个页面都是客户端 `isDynamicEntry`。
 - `npm run build` 通过，客户端和 Node SSR 均成功输出独立 chunks。
-- 客户端入口保持 6.34 KB（gzip 2.92 KB）。
-- Node 入口保持 53.15 KB（gzip 19.96 KB）。
+- 客户端入口为 6.34 KB（gzip 2.92 KB）。
+- Node 入口为 53.30 KB（gzip 20.00 KB）。
 - 最大客户端业务页面 `BlogUpdateForm` 为 91.72 KB（gzip 31.03 KB）。
 - Axios 已移除，编辑器使用原生 Fetch API。
 - 页面视图名统一为 `hello`、`blogList`、`blogUpdateForm`、`blogs`、`showPost`。
@@ -353,6 +361,9 @@ Cache-Control: public, max-age=31556952, immutable
 - `/blog/list` 在未提供 Basic Auth 时返回 `401`。
 - 首页只 preload `Hello` 和公共依赖，博客页只 preload `Blogs` 及其实际依赖。
 - 带 hash 的客户端入口返回一年 `immutable` 缓存头。
+- `/zh/`、`/zh/blogs` 和 `/es/blogs` 返回正确语言的 SSR HTML。
+- `/zh/blog/list` 未提供 Basic Auth 时保持 `401`。
+- `/zh/...` 响应写入全站 `language=zh` Cookie，随后不带前缀的页面继续使用中文。
 
 数据库依赖的 preview 需要有效的本地 MySQL 环境变量和可访问数据库。本次环境满足该条件并通过 `/blogs` 查询验证；其他部署环境仍需独立验证数据库网络与凭证。
 
@@ -389,6 +400,8 @@ npm run typecheck
 npm run build
 npm run preview
 ```
+
+`npm run dev` 同时使用 Vite 和 Hono dev server。Hono 插件必须排除 `/src` 下由 Vite 转换的 JSON、图片、字体和 WASM 等源码资源，否则 `*.json?import` 会被 Hono 当作应用路由并返回 `404`。`vite.config.ts` 在插件默认 exclude 基础上补充了这些源码资源规则；`npm run client` 则由 Vite 直接处理。
 
 多环境构建通过 `SERVER_MODE` 选择 `.env.${SERVER_MODE}`：
 

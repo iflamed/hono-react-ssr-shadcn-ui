@@ -50,6 +50,8 @@ Pages are registered as a minimal `view name -> dynamic import` map in `src/view
 
 Blog list, editor, mutation and article handlers are loaded dynamically from `src/features/blog`. MySQL, Drizzle, React and dotenv remain external Node dependencies instead of being copied into the server bundle.
 
+Localized entry routes such as `/zh/blogs` and `/es/article/:slug` are supported. Hono's language detector caches the selected locale in its `language` cookie, so subsequent unprefixed links continue using the selected language.
+
 Detailed architecture and upgrade notes:
 
 - [中文：JavaScript 按页面拆分与 Node.js SSR 架构优化方案](./docs/js-code-splitting-plan.md)

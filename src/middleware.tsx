@@ -1,5 +1,6 @@
 import { createMiddleware } from "hono/factory";
 import { languageDetector } from "hono/language";
+import isProd from "./config/is_prod";
 import type { ViewData, ViewName } from "./global";
 import { loadView } from "./view";
 import manifest from "./lib/manifest.json";
@@ -42,4 +43,8 @@ export const LanguageDetector = languageDetector({
   convertDetectedLanguage: (lang) => lang.split("-")[0],
   supportedLanguages: languages, // Must include fallback
   fallbackLanguage: "en", // Required
+  cookieOptions: {
+    path: "/",
+    secure: isProd,
+  },
 });

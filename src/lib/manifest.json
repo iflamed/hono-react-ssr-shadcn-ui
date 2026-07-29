@@ -51,7 +51,7 @@
     "name": "rolldown-runtime"
   },
   "src/client.tsx": {
-    "file": "static/client-BbbPjXnp.js",
+    "file": "static/client-135RNUMB.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
@@ -67,7 +67,7 @@
       "src/view/ShowPost.tsx"
     ],
     "css": [
-      "static/assets/client-NVKqgx1s.css"
+      "static/assets/client-BAcBQDlv.css"
     ]
   },
   "src/view/BlogList.tsx": {
@@ -97,7 +97,7 @@
     ]
   },
   "src/view/Blogs.tsx": {
-    "file": "static/chunks/Blogs-Blmhlfzc.js",
+    "file": "static/chunks/Blogs-CzyRhnZB.js",
     "name": "Blogs",
     "src": "src/view/Blogs.tsx",
     "isDynamicEntry": true,
@@ -110,7 +110,7 @@
     ]
   },
   "src/view/Hello.tsx": {
-    "file": "static/chunks/Hello-CWoA1UqB.js",
+    "file": "static/chunks/Hello-DLfkYLOD.js",
     "name": "Hello",
     "src": "src/view/Hello.tsx",
     "isDynamicEntry": true,
