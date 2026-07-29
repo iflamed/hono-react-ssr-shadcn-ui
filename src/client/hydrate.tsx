@@ -1,6 +1,6 @@
 import { hydrateRoot } from "react-dom/client";
 import ClientShell from "@/shared/client-shell";
-import { isViewName, loadView } from "@/view-loaders";
+import { isViewName, loadView } from "@/view";
 import type { ViewData } from "@/global";
 
 const hydratePage = async () => {

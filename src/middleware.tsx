@@ -1,7 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { languageDetector } from "hono/language";
 import type { ViewData, ViewName } from "./global";
-import { loadView } from "./view-loaders";
+import { loadView } from "./view";
 import manifest from "./lib/manifest.json";
 import { languages } from "./locales";
 import { createI18n } from "./lib/i18n";
