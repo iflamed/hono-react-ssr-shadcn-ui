@@ -95,6 +95,7 @@ export default function Document({ children, view, manifest }: DocumentProps) {
             />
           </>
         )}
+        {!isProd && <link href="/src/app.css" rel="stylesheet" />}
         {assets.stylesheets.map((href) => (
           <link href={href} rel="stylesheet" key={href} />
         ))}
