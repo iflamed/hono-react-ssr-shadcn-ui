@@ -29,11 +29,12 @@ export const listPosts = async (
   limit: number,
   cursor?: string,
 ): Promise<ListedPosts> => {
-  const values = await db.query.blog.findMany({
-    limit,
-    where: lt(blog.id, getCursor(cursor)),
-    orderBy: [desc(blog.id)],
-  });
+  const values = await db
+    .select()
+    .from(blog)
+    .where(lt(blog.id, getCursor(cursor)))
+    .orderBy(desc(blog.id))
+    .limit(limit);
 
   return {
     posts: values.map(toBlogPost),
@@ -42,7 +43,11 @@ export const listPosts = async (
 };
 
 export const findPostBySlug = async (slug: string) => {
-  return db.query.blog.findFirst({
-    where: eq(blog.slug, slug),
-  });
+  const [post] = await db
+    .select()
+    .from(blog)
+    .where(eq(blog.slug, slug))
+    .limit(1);
+
+  return post;
 };
