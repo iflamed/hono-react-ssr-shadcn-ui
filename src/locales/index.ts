@@ -1,25 +1,19 @@
-export { languages } from "./supported";
-import { languages } from "./supported";
+import files from "./files";
 
-const getPathLanguage = (pathname: string): string | undefined => {
-  const [, pathLanguage] = pathname.split("/");
-  if (!pathLanguage) return undefined;
-
-  const normalizedLanguage = pathLanguage.toLowerCase();
-  return languages.find(
-    (language) => language.toLowerCase() === normalizedLanguage,
-  );
-};
-
-const getLocalePrefix = (request: Request): string => {
-  const language = getPathLanguage(new URL(request.url).pathname);
-  return language ? `/${language}` : "";
-};
+export const languages = Object.keys(files);
 
 export function getPath(req: Request) {
-  const pathname = new URL(req.url).pathname;
-  const localePrefix = getLocalePrefix(req);
-  if (!localePrefix) return pathname;
-
-  return pathname.slice(localePrefix.length) || "/";
+  const url = new URL(req.url)
+  let pathname = url.pathname
+  const segments = pathname.split('/').filter(Boolean)
+  if (segments.length > 0) {
+    for (let idx = 0; idx < languages.length; idx++) {
+      if (segments[0] == languages[idx]) {
+        segments.shift()
+        pathname = '/' + segments.join('/')
+        break
+      }
+    }
+  }
+  return pathname
 }
