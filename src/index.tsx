@@ -1,6 +1,7 @@
 import env from "./config/env";
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { trimTrailingSlash } from "hono/trailing-slash";
 import { Renderer } from "./server/renderer";
 import { LanguageDetector, Translatori18n, ViewRenderer } from "./middleware";
 import createBlogServer from "./blog";
@@ -8,6 +9,7 @@ import { getPath } from "./locales";
 
 const app = new Hono({ getPath });
 
+app.use(trimTrailingSlash());
 app.use(LanguageDetector);
 app.use(Translatori18n);
 app.use(Renderer);
