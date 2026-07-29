@@ -17,7 +17,7 @@ export const renderAdminBlogList = async (
     c.req.query("cursor"),
   );
 
-  return c.view("bloglist", {
+  return c.view("blogList", {
     meta: {
       title: `${options.blogTitle} - blog posts`,
       description: `${options.blogTitle} - blog posts`,

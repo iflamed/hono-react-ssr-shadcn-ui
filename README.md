@@ -37,13 +37,13 @@ npm run deploy
 
 ## Page-level code splitting
 
-Pages are registered as dynamic imports in `src/view-loaders.ts`. The client hydrates only the current page, while SSR loads the same page module on demand. Production HTML resolves the Vite manifest and emits only the current page's styles and module preloads.
+Pages are registered as a simple `view name -> dynamic import` map in `src/view-loaders.ts`. `ViewName` is inferred from the map keys, and the matching Vite manifest entry is resolved automatically. The client hydrates only the current page, while SSR loads the same page module on demand. Production HTML emits only the current page's styles and module preloads.
 
 The Cloudflare Vite Plugin builds browser assets into `dist/client` and the Worker into `dist/ssr`. Route handlers and SSR pages remain separate ES modules under `dist/ssr/chunks`; the generated `dist/ssr/wrangler.json` points Workers Assets to `dist/client`.
 
 Static assets use Workers' default asset-first routing, so hashed JS, CSS and files such as `robots.txt` are served without invoking SSR. Requests without a matching asset are handled by the Hono Worker.
 
-See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for the architecture, implementation order, verification results, and follow-up migration plan.
+See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for the original implementation plan and [docs/cloudflare-workers-architecture-optimization.md](./docs/cloudflare-workers-architecture-optimization.md) for the complete English architecture, optimization, and Pages-to-Workers migration guide.
 
 ## Blog configuration
 

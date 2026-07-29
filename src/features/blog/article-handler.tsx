@@ -18,7 +18,7 @@ export const renderArticle = async (c: BlogContext, options: BlogOptions) => {
   const article = `<h1>${post.title}</h1>${markdown.render(post.markdown || "")}`;
   const url = getBlogUrl(c, options, `/article/${slug}`);
 
-  return c.view("post", {
+  return c.view("showPost", {
     meta: {
       lang: post.lang,
       title: post.title,

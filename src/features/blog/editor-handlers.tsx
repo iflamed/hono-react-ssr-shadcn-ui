@@ -15,7 +15,7 @@ export const renderNewBlogPost = (c: BlogContext, options: BlogOptions) => {
     ts: 0,
   };
 
-  return c.view("blogupdateform", {
+  return c.view("blogUpdateForm", {
     meta: {
       title: `${options.blogTitle} - new blog post`,
       description: `${options.blogTitle} - new blog post`,
@@ -47,7 +47,7 @@ export const renderEditBlogPost = async (
     desc: storedPost.description || storedPost.desc,
   };
 
-  return c.view("blogupdateform", {
+  return c.view("blogUpdateForm", {
     meta: {
       title: `${options.blogTitle} - edit blog post`,
       description: `${options.blogTitle} - edit blog post`,

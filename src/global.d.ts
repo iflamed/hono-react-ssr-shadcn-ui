@@ -1,8 +1,8 @@
 import type { I18nInstance } from "@/lib/i18n";
+import type { ViewName as RegisteredViewName } from "@/view";
 import type { LanguageCode } from "iso-639-1";
 
-export type ViewName =
-  "hello" | "bloglist" | "blogupdateform" | "blogs" | "post";
+export type ViewName = RegisteredViewName;
 
 export interface Language {
   code: LanguageCode;

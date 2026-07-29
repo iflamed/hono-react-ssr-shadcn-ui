@@ -66,8 +66,8 @@ You are an expert full-stack developer proficient in TypeScript, React 19, Hono 
 - /worker-configuration.d.ts : Wrangler-generated binding and Workers runtime types; regenerate with `npm run cf-typegen`
 - /src/app.css : The main stylesheet file
 - /src/index.tsx : The main file which contain server routes, should add new route in this file
-- /src/view-loaders.ts : This file contains the lazy view definitions. Add every page as a literal dynamic import and include its Vite manifest module id.
-- /src/view.tsx : This compatibility module re-exports the lazy view helpers. Do not add synchronous page imports here.
+- /src/view-loaders.ts : This file only contains the `view name -> dynamic import` configuration. Add every page here and do not add helper logic or manifest module ids.
+- /src/view.tsx : This module derives `ViewName` and provides the lazy view lookup helpers. Do not register pages here.
 - /src/global.d.ts : This file contains all Typescript type definitions, and new type definitions need to be placed in this file
 - /src/config : This directory contains some dynamic configurations for this application, which can be written to this directory.
 - /src/lib : This directory can be used to put some public libraries, please put some public functions into the `/src/lib/utils.ts` file in this directory and mark each funtion to be exported.
@@ -77,22 +77,17 @@ You are an expert full-stack developer proficient in TypeScript, React 19, Hono 
 
 # Tutorial on creating a route and using views
 
-If you create a new page, add its name to `ViewName` in `/src/global.d.ts`, then add its lazy mapping to `/src/view-loaders.ts`. After that, the page can be used in a route.
+If you create a new page, add one lazy import to `/src/view-loaders.ts`. `ViewName` is inferred automatically from the mapping keys, and the server resolves the matching Vite manifest entry from the view name.
 
 ## Add page to the lazy view map
 
-Assuming you have a login page, add `login` to the `ViewName` union and add a definition whose `load` function uses a literal dynamic import. Do not synchronously import the page, because that would merge it back into the common client and Worker entry chunks.
+Assuming you have a `LoginPage` page, add a `loginPage` mapping whose value is a literal dynamic import. The mapping key must match the page filename after ignoring case and separators. Do not synchronously import the page, because that would merge it back into the common client and Worker entry chunks.
 
 The code maybe like below:
 
 ```typescript
-export type ViewName = "hello" | "login";
-
-export const viewDefinitions = {
-  login: {
-    moduleId: "src/view/LoginPage.tsx",
-    load: () => import("./view/LoginPage"),
-  },
+export const viewLoaders = {
+  loginPage: () => import("./view/LoginPage"),
 };
 ```
 
@@ -102,7 +97,7 @@ Just call the `c.view` method like below with title and props:
 
 ```typescript
 app.get("/login", (c) => {
-  return c.view("login", {
+  return c.view("loginPage", {
     meta: {
       title: "The title of this page",
     },

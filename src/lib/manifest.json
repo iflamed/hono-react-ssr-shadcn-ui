@@ -51,7 +51,7 @@
     "name": "rolldown-runtime"
   },
   "src/client.tsx": {
-    "file": "static/client-BR2Zq95a.js",
+    "file": "static/client-CUrnG35E.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
@@ -97,7 +97,7 @@
     ]
   },
   "src/view/Blogs.tsx": {
-    "file": "static/chunks/Blogs-CR0FTphK.js",
+    "file": "static/chunks/Blogs-DXIYxv5R.js",
     "name": "Blogs",
     "src": "src/view/Blogs.tsx",
     "isDynamicEntry": true,
@@ -110,7 +110,7 @@
     ]
   },
   "src/view/Hello.tsx": {
-    "file": "static/chunks/Hello-D2XtbVUp.js",
+    "file": "static/chunks/Hello-DGg6h1QM.js",
     "name": "Hello",
     "src": "src/view/Hello.tsx",
     "isDynamicEntry": true,
