@@ -75,6 +75,27 @@ You are an expert full-stack developer proficient in TypeScript, React 19, Hono 
 - /src/components : This directory is used to put some public React components, you need to put the new React components into this directory.
 - /src/components/ui : This directory is dedicated to some shadcn/ui components, please do not modify the files in this folder, the contents of this folder can only be modified by the command `npx shadcn@latest add {component-name}`.
 
+# i18n and locale content rules
+
+- English is the final fallback language, not a language that should be forced whenever a route has no locale prefix. Effective language selection follows `querystring -> path -> cookie -> header -> English fallback`. For example, an unprefixed request with `language=zh` in its Cookie must render Chinese, while an explicit `/ja/...` path must take precedence over that Cookie.
+- In Hono routes, always treat `c.locale.lang` as the resolved language source and `c.locale.t` as the translation source. Do not re-read the URL, inspect the Cookie again, or add a page-specific locale resolver after `LanguageDetector` and `Translatori18n` have run.
+- Prefer passing `c.locale` (or a narrow `{ lang, t }` interface) into translated content builders. Build visible strings with `c.locale.t("translation.key")` so the shared `I18nInstance` handles missing-key fallback to English. Do not read locale JSON files directly in a page builder or implement manual fallbacks such as `localeFiles[locale] ?? localeFiles.en`.
+- Keep SSR, metadata, JSON-LD, and hydration on the same resolved locale. Set `meta.lang` and `meta.locale` from the same locale used to build the visible content; otherwise the server HTML and hydrated React tree can disagree.
+- Keep `src/locales/*.json` limited to user-visible text that needs translation only. Locale files should not contain non-display configuration such as route paths, section IDs, icon names, image filenames or URLs, image width/height, hrefs, code identifiers, feature flags, layout data, or other structural metadata.
+- Put non-display site structure and configuration in TypeScript config files such as `src/config/site-content.ts`, then combine that structure with translated locale text at runtime.
+- When adding or changing any visible text in pages, components, metadata, JSON-LD, form labels, placeholders, buttons, API messages, alt text, navigation, footer links, or CTA copy, add the corresponding translation keys/values for every supported locale file: `en`, `zh` and others.
+- Avoid hardcoded visible text in React components and Hono handlers. Components should receive translated text through props/content objects or use `useTranslation`; Hono handlers should use `c.locale.t` for translated responses.
+- `I18nInstance` may fall back to English for a missing key at runtime, but this is a safety net rather than a substitute for complete translations. Final code should still include real translations for every supported locale.
+- In Vite development mode, locale JSON imports and imported assets must be handled by Vite instead of the Hono dev-server. Preserve `defaultOptions.exclude` and extend `devServer.exclude` for source asset types used by the client, including `json` and `svg`; otherwise requests such as `/src/locales/ja.json?import` can be intercepted by Hono and return 404.
+
+## i18n verification checklist
+
+- Request an unprefixed page with `language=zh` in the Cookie and verify that the HTML language, metadata, and visible content are Chinese.
+- Request an explicitly prefixed page such as `/ja/...` while keeping `language=zh` in the Cookie and verify that the path wins and the response is Japanese.
+- Request a page without a supported path, Cookie, query-string language, or supported language header and verify that it falls back to English.
+- Simulate a missing current-locale translation key and verify that `c.locale.t` returns its English value without page-specific fallback code.
+- In development mode, verify that locale `*.json?import` requests return `200 text/javascript`, the page hydrates successfully, and the browser console has no hydration or dynamic-import errors.
+
 # Tutorial on creating a route and using views
 
 If you create a new page, add one lazy import to `/src/view-loaders.ts`. `ViewName` is inferred automatically from the mapping keys, and the server resolves the matching Vite manifest entry from the view name.
