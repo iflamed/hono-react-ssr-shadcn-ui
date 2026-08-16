@@ -298,6 +298,7 @@ The source Wrangler configuration declares:
 - the Worker name;
 - the TypeScript Hono entry;
 - the compatibility date and `nodejs_compat` flag;
+- front-of-Worker caching and cross-version cache reuse;
 - the D1 database binding;
 - non-secret variables;
 - required secret names;
@@ -317,6 +318,10 @@ npm run deploy   -> build, remote D1 migrations, then wrangler deploy
 ```
 
 This replaces Pages-specific deployment commands and removes the `_worker.js` output convention.
+
+Public SSR routes combine Hono's Cache API middleware with Workers Caching in front of the Worker. `createPublicPageCache(maxAgeSeconds, staleIfErrorSeconds)` configures the fresh TTL and the error fallback window; the latter defaults to seven days. `Vary: Cookie, Accept-Language` keeps locale variants separate. Every response without an explicit public policy—including administration pages, mutations and errors—is marked `private, no-store`.
+
+`cross_version_cache = true` lets a newly deployed version reuse public pages created by its predecessor. If page refresh throws, times out or returns `5xx`, Cloudflare serves the last successful response during its `stale-if-error` window. A true cache miss and a response older than that window cannot fall back to stale content.
 
 ### 9.4 Static asset routing
 
@@ -503,6 +508,8 @@ No `ViewName` union or manifest module ID update is required.
 - [Vite environments in the Cloudflare Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/vite-environments/)
 - [Static assets with the Cloudflare Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
 - [Workers Static Assets headers](https://developers.cloudflare.com/workers/static-assets/headers/)
+- [Workers Caching configuration](https://developers.cloudflare.com/workers/cache/configuration/)
+- [Workers Cache API](https://developers.cloudflare.com/workers/runtime-apis/cache/)
 - [Cloudflare D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/)
 - [Cloudflare D1 local development](https://developers.cloudflare.com/d1/best-practices/local-development/)
 - [Drizzle ORM with Cloudflare D1](https://orm.drizzle.team/docs/sqlite/connect-cloudflare-d1)

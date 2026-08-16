@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { Renderer } from "./server/renderer";
 import {
   createPublicPageCache,
+  DisableCacheByDefault,
   LanguageDetector,
   Translatori18n,
   ViewRenderer,
@@ -11,6 +12,7 @@ import { getPath } from "./locales";
 
 const app = new Hono({ getPath });
 
+app.use(DisableCacheByDefault);
 app.use(LanguageDetector);
 app.use(Translatori18n);
 

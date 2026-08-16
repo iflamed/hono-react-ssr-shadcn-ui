@@ -50,16 +50,24 @@ See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for the o
 ## Public page cache
 
 The home page, public blog list, and article pages use Hono's cache middleware,
-backed by the Cloudflare Workers Cache API. Each route creates the middleware
-with `createPublicPageCache(maxAgeSeconds)`, so its TTL can be configured at the
-route registration. Responses are varied by the language cookie and
-`Accept-Language` header. Authenticated blog administration routes and all write
-operations are excluded.
+backed by the Cloudflare Workers Cache API, together with Workers Caching in
+front of the Worker. Each route creates the middleware with
+`createPublicPageCache(maxAgeSeconds, staleIfErrorSeconds)`, so both its normal
+TTL and optional error fallback window can be configured at route registration.
+The fallback window defaults to seven days.
 
-The short TTL intentionally avoids explicit cache-purge logic: a blog update may
-take up to five minutes to appear in an already cached region. For production,
-serve the Worker through a custom domain so Cloudflare Cache API operations are
-available.
+Responses are varied by the language cookie and `Accept-Language` header.
+Authenticated blog administration routes, write operations, errors and all
+other responses without an explicit public cache policy use `private, no-store`.
+The short normal TTL intentionally avoids explicit cache-purge logic: a blog
+update may take up to five minutes to appear in an already cached region.
+
+The Wrangler cache configuration enables cross-version caching. A new Worker
+version can therefore reuse the last successful public response; if the Worker
+throws, times out or returns `5xx` while refreshing an expired page, Cloudflare
+can continue serving that stale response during the configured fallback window.
+For production, serve the Worker through a custom domain so the Hono Cache API
+layer is also available.
 
 ## Blog configuration
 

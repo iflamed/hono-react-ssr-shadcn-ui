@@ -5,6 +5,10 @@ compatibility_date = "2026-03-16"
 workers_dev = true
 preview_urls = false
 
+[cache]
+enabled = true
+cross_version_cache = true
+
 [vars]
 BLOG_USERNAME="admin"
 

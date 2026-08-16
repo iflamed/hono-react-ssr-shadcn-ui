@@ -289,6 +289,7 @@ Cloudflare Vite Plugin 将 Hono Worker 集成到 Vite 的 `ssr` 环境，并在�
 
 - Worker 名称和 `src/index.tsx` 入口；
 - compatibility date 和 `nodejs_compat`；
+- Worker 前置缓存与跨版本缓存复用；
 - `DB` D1 binding；
 - 普通变量和 required secrets；
 - `workers_dev = true`；
@@ -311,6 +312,8 @@ npm run db:migrate:remote
 ```
 
 静态资源使用 asset-first 路由：命中 `dist/client` 文件时直接由 Workers Static Assets 提供；未命中的页面和 API 请求才进入 Hono Worker。
+
+公开 SSR 页面同时使用 Hono Cache API 和 Worker 前置缓存。路由通过 `createPublicPageCache(maxAgeSeconds, staleIfErrorSeconds)` 分别配置正常 TTL 与异常回退窗口，默认异常回退窗口为 7 天。`Vary: Cookie, Accept-Language` 保证语言版本隔离；其他页面、后台接口、写操作和错误响应统一返回 `Cache-Control: private, no-store`。`cross_version_cache = true` 让新版本在启动失败、超时或返回 `5xx` 时仍可使用旧版本生成的缓存页面。正常 TTL 过期后，`stale-if-error` 窗口内可返回旧页面；超过该窗口或从未产生过成功缓存时仍会返回 Worker 错误。
 
 ## 11. 静态资源与 304 缓存策略
 
@@ -475,6 +478,7 @@ npm run preview
 - HTML 没有 preload 其他无关页面；
 - `dist/ssr/wrangler.json` 的静态资源目录指向 `dist/client`；
 - `/static/*` 返回预期的 immutable 缓存头；
+- 公开页面返回 `stale-if-error`，后台、写操作和错误响应返回 `private, no-store`；
 - 本地与远程 D1 migration 状态正确；
 - SSR 页面、API、D1 CRUD 和 Basic Auth 行为正常；
 - `.dev.vars` 等 secret 文件未被 Git 跟踪；
@@ -488,6 +492,8 @@ npm run preview
 - [Vite environments](https://developers.cloudflare.com/workers/vite-plugin/reference/vite-environments/)
 - [Static assets with the Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
 - [Static Assets headers](https://developers.cloudflare.com/workers/static-assets/headers/)
+- [Workers Caching configuration](https://developers.cloudflare.com/workers/cache/configuration/)
+- [Workers Cache API](https://developers.cloudflare.com/workers/runtime-apis/cache/)
 - [Cloudflare D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/)
 - [Cloudflare D1 local development](https://developers.cloudflare.com/d1/best-practices/local-development/)
 - [Drizzle ORM with Cloudflare D1](https://orm.drizzle.team/docs/sqlite/connect-cloudflare-d1)

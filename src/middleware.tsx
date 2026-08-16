@@ -9,12 +9,28 @@ import { languages } from "./locales";
 import { createI18n } from "./lib/i18n";
 import files from "./locales/files";
 
-export const createPublicPageCache = (maxAgeSeconds: number) =>
+export const createPublicPageCache = (
+  maxAgeSeconds: number,
+  staleIfErrorSeconds = 7 * 24 * 60 * 60,
+) =>
   cache({
     cacheName: "hono-public-pages-v1",
-    cacheControl: `public, max-age=${maxAgeSeconds}`,
+    cacheControl: `public, max-age=${maxAgeSeconds}, stale-if-error=${staleIfErrorSeconds}`,
     vary: ["Cookie", "Accept-Language"],
   });
+
+export const DisableCacheByDefault = createMiddleware(async (c, next) => {
+  await next();
+
+  const cacheControl = c.res.headers.get("Cache-Control");
+  const isPublic = cacheControl
+    ?.split(",")
+    .some((directive) => directive.trim().toLowerCase() === "public");
+
+  if (!isPublic) {
+    c.header("Cache-Control", "private, no-store");
+  }
+});
 
 export const ViewRenderer = createMiddleware(async (c, next) => {
   c.view = async (name: ViewName, view: ViewData) => {
