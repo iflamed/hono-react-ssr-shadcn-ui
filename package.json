@@ -7,7 +7,7 @@
     "build": "$npm_execpath run version && vite build",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "deploy": "$npm_execpath run build && wrangler deploy",
+    "deploy": "$npm_execpath run build && $npm_execpath run db:migrate:remote && wrangler deploy",
     "cf-typegen": "wrangler types",
     "db:generate": "drizzle-kit generate",
     "db:check": "drizzle-kit check",

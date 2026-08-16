@@ -47,6 +47,20 @@ Static assets use Workers' default asset-first routing, so hashed JS, CSS and fi
 
 See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for the original implementation plan and [docs/cloudflare-workers-architecture-optimization.md](./docs/cloudflare-workers-architecture-optimization.md) for the complete English architecture, optimization, and Pages-to-Workers migration guide.
 
+## Public page cache
+
+The home page, public blog list, and article pages use Hono's cache middleware,
+backed by the Cloudflare Workers Cache API. Each route creates the middleware
+with `createPublicPageCache(maxAgeSeconds)`, so its TTL can be configured at the
+route registration. Responses are varied by the language cookie and
+`Accept-Language` header. Authenticated blog administration routes and all write
+operations are excluded.
+
+The short TTL intentionally avoids explicit cache-purge logic: a blog update may
+take up to five minutes to appear in an already cached region. For production,
+serve the Worker through a custom domain so Cloudflare Cache API operations are
+available.
+
 ## Blog configuration
 
 ### Blog Database
@@ -71,13 +85,11 @@ npm run db:migrate:local
 ```
 
 `wrangler.toml` declares the `DB` binding without a database ID, so Wrangler can
-automatically provision the D1 database for this template. On the first
-production deployment, deploy once to provision the resource, apply the remote
-migrations, and then deploy the application again:
+automatically provision the D1 database for this template. The deployment script
+builds the application, applies all pending remote migrations, and only then
+deploys the Worker:
 
 ```shell
-npm run deploy
-npm run db:migrate:remote
 npm run deploy
 ```
 
@@ -87,13 +99,12 @@ For an established production service, avoid the first-deploy provisioning gap:
 npx wrangler d1 create hono-react-ssr-blog
 # Add the returned database_name and database_id to the DB block in wrangler.toml
 npm run cf-typegen
-npm run db:migrate:remote
 # Import existing KV records, verify them, and only then deploy the D1 code
 npm run deploy
 ```
 
-Run `npm run db:migrate:remote` before deploying code that depends on later
-schema changes. Drizzle migrations create and upgrade the schema; they do not
+`npm run db:migrate:remote` remains available for applying migrations without a
+deployment. Drizzle migrations create and upgrade the schema; they do not
 automatically copy records from an existing KV namespace.
 
 ### Blog's Admin

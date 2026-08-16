@@ -303,7 +303,7 @@ npm run dev       # Vite + 本地 Workers runtime
 npm run typecheck # TypeScript 检查
 npm run build     # 先 client，后 SSR Worker
 npm run preview   # 预览编译后 Workers 产物
-npm run deploy    # build 后 wrangler deploy
+npm run deploy    # build、远程 D1 migration、wrangler deploy
 npm run cf-typegen
 npm run db:generate -- --name=change-name
 npm run db:migrate:local
@@ -348,7 +348,7 @@ request
 
 当前博客通过 `c.env.DB` 获取 D1 binding，并在 repository 内按请求创建 Drizzle client。`src/db/schema.ts` 是 schema 的唯一来源，Drizzle Kit 将 SQLite migration 生成到 `drizzle/d1`，再由 Wrangler 分别应用到本地或远程 D1。列表采用基于自增主键的 keyset pagination，避免随着数据量增加而不断放大的 offset 扫描成本。
 
-本地开发前运行 `npm run db:migrate:local`；生产发布时显式运行 `npm run db:migrate:remote`。Drizzle schema migration 只负责表结构，不会自动复制原 KV 中的文章，已有线上数据必须在移除 KV binding 前单独完成一次性导入。
+本地开发前运行 `npm run db:migrate:local`。`npm run deploy` 会先完成构建，再自动执行 `npm run db:migrate:remote`，只有 migration 成功后才执行 `wrangler deploy`；独立的远程 migration 命令仍可用于只更新数据库。Drizzle schema migration 只负责表结构，不会自动复制原 KV 中的文章，已有线上数据必须在移除 KV binding 前单独完成一次性导入。
 
 配置与秘密分离：
 

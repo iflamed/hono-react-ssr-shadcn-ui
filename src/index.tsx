@@ -1,6 +1,11 @@
 import { Hono } from "hono";
 import { Renderer } from "./server/renderer";
-import { LanguageDetector, Translatori18n, ViewRenderer } from "./middleware";
+import {
+  createPublicPageCache,
+  LanguageDetector,
+  Translatori18n,
+  ViewRenderer,
+} from "./middleware";
 import createBlogServer from "./blog";
 import { getPath } from "./locales";
 
@@ -12,7 +17,7 @@ app.use(Translatori18n);
 app.use(Renderer);
 app.use(ViewRenderer);
 
-app.get("/", (c) => {
+app.get("/", createPublicPageCache(5 * 60), (c) => {
   return c.view("hello", {
     meta: {
       title: "Honojs demo with react SSR and shadcn UI.",

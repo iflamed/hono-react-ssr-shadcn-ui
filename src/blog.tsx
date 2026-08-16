@@ -1,7 +1,12 @@
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 import { Renderer } from "./server/renderer";
-import { LanguageDetector, Translatori18n, ViewRenderer } from "./middleware";
+import {
+  createPublicPageCache,
+  LanguageDetector,
+  Translatori18n,
+  ViewRenderer,
+} from "./middleware";
 import { getPath } from "./locales";
 import type { BlogEnv, BlogOptions } from "./features/blog/types";
 
@@ -56,13 +61,13 @@ export default function createBlogServer(options: BlogOptions) {
     return deleteBlogPost(c);
   });
 
-  app.get("/blogs", async (c) => {
+  app.get("/blogs", createPublicPageCache(5 * 60), async (c) => {
     const { renderPublicBlogList } =
       await import("./features/blog/list-handlers");
     return renderPublicBlogList(c, options);
   });
 
-  app.get("/article/:idx", async (c) => {
+  app.get("/article/:idx", createPublicPageCache(5 * 60), async (c) => {
     const { renderArticle } = await import("./features/blog/article-handler");
     return renderArticle(c, options);
   });

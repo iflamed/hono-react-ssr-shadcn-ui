@@ -313,7 +313,7 @@ The project scripts now use:
 npm run dev      -> Vite development using the Workers runtime
 npm run build    -> client build followed by SSR Worker build
 npm run preview  -> local preview of compiled output
-npm run deploy   -> build followed by wrangler deploy
+npm run deploy   -> build, remote D1 migrations, then wrangler deploy
 ```
 
 This replaces Pages-specific deployment commands and removes the `_worker.js` output convention.
@@ -365,7 +365,7 @@ The `DB` D1 database is configured as a Wrangler binding and is available throug
 
 `src/db/schema.ts` is the schema source of truth. Drizzle Kit writes generated SQLite migrations to `drizzle/d1`, while Wrangler records and applies those migrations to local or remote D1 databases. The blog repository uses a unique slug index, separate creation and modification timestamps, and keyset pagination based on the integer primary key.
 
-Local development uses Wrangler's local D1 database. Run `npm run db:migrate:local` before `npm run dev`. Apply production migrations explicitly with `npm run db:migrate:remote`; deploying Worker code does not replace schema migration management. Schema migrations do not copy data from a previous KV namespace, so existing production articles require a separate one-time data import before the KV binding is removed.
+Local development uses Wrangler's local D1 database. Run `npm run db:migrate:local` before `npm run dev`. The deployment script builds first, applies pending remote D1 migrations, and only deploys the Worker after the migrations succeed. `npm run db:migrate:remote` remains available when the schema must be updated without deploying application code. Schema migrations do not copy data from a previous KV namespace, so existing production articles require a separate one-time data import before the KV binding is removed.
 
 ## 12. Variables, Secrets, and Generated Types
 
