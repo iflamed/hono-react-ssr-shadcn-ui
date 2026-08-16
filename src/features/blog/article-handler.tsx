@@ -12,7 +12,7 @@ export const renderArticle = async (c: BlogContext, options: BlogOptions) => {
   if (!value.value || !value.metadata) return c.notFound();
 
   const post = JSON.parse(value.value) as BlogPost & { description: string };
-  const postMetadata = value.metadata as BlogPost;
+  const postMetadata = value.metadata as Pick<BlogPost, "ts">;
   const { posts } = await listPosts(c.env.blog, 3);
   const markdown = markdownit();
   const article = `<h1>${post.title}</h1>${markdown.render(post.markdown || "")}`;

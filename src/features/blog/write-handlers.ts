@@ -14,13 +14,7 @@ const readBlogInput = async (
   };
 };
 
-const getMetadata = (input: BlogWriteInput, timestamp: number) => ({
-  title: input.title,
-  desc: input.description,
-  banner: input.banner,
-  lang: input.lang,
-  ts: timestamp,
-});
+const getMetadata = (timestamp: number) => ({ ts: timestamp });
 
 export const createBlogPost = async (c: BlogContext) => {
   const { body, input } = await readBlogInput(c);
@@ -30,7 +24,7 @@ export const createBlogPost = async (c: BlogContext) => {
   const slug = `${9999999999999 - timestamp}-${providedSlug || generatedSlug}`;
 
   await c.env.blog.put(slug, body, {
-    metadata: getMetadata(input, timestamp),
+    metadata: getMetadata(timestamp),
   });
 
   return c.json({ status: 0, data: null });
@@ -40,9 +34,9 @@ export const updateBlogPost = async (c: BlogContext) => {
   const slug = c.req.param("idx");
   if (!slug) return c.json({ status: 1, error: "Missing blog slug" }, 400);
 
-  const { body, input } = await readBlogInput(c);
+  const { body } = await readBlogInput(c);
   await c.env.blog.put(slug, body, {
-    metadata: getMetadata(input, Date.now()),
+    metadata: getMetadata(Date.now()),
   });
 
   return c.json({ status: 0, data: null });
