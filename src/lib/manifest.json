@@ -1,46 +1,38 @@
 {
-  "_Article-Dz2KP2u-.js": {
-    "file": "static/chunks/Article-Dz2KP2u-.js",
+  "_Article-XmqdaFy1.js": {
+    "file": "static/chunks/Article-XmqdaFy1.js",
     "name": "Article",
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js"
+      "_react-runtime-DpSKDDTj.js"
     ]
   },
-  "_button-BcpiYQSL.js": {
-    "file": "static/chunks/button-BcpiYQSL.js",
+  "_button-D8yYWndK.js": {
+    "file": "static/chunks/button-D8yYWndK.js",
     "name": "button",
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js"
+      "_react-runtime-DpSKDDTj.js"
     ]
   },
-  "_chevron-right-CJG0g79T.js": {
-    "file": "static/chunks/chevron-right-CJG0g79T.js",
+  "_chevron-right-C6h7yTTx.js": {
+    "file": "static/chunks/chevron-right-C6h7yTTx.js",
     "name": "chevron-right",
     "imports": [
-      "_createLucideIcon-CmuOILP_.js"
+      "src/client.tsx"
     ]
   },
-  "_createLucideIcon-CmuOILP_.js": {
-    "file": "static/chunks/createLucideIcon-CmuOILP_.js",
-    "name": "createLucideIcon",
-    "imports": [
-      "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js"
-    ]
-  },
-  "_label-CDfoFqvx.js": {
-    "file": "static/chunks/label-CDfoFqvx.js",
+  "_label-Bs4YmHtz.js": {
+    "file": "static/chunks/label-Bs4YmHtz.js",
     "name": "label",
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js",
-      "_button-BcpiYQSL.js"
+      "_react-runtime-DpSKDDTj.js",
+      "_button-D8yYWndK.js"
     ]
   },
-  "_react-runtime-C2OcCn2q.js": {
-    "file": "static/chunks/react-runtime-C2OcCn2q.js",
+  "_react-runtime-DpSKDDTj.js": {
+    "file": "static/chunks/react-runtime-DpSKDDTj.js",
     "name": "react-runtime",
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js"
@@ -51,13 +43,13 @@
     "name": "rolldown-runtime"
   },
   "src/client.tsx": {
-    "file": "static/client-CUrnG35E.js",
+    "file": "static/client-MFybZlO0.js",
     "name": "client",
     "src": "src/client.tsx",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js"
+      "_react-runtime-DpSKDDTj.js"
     ],
     "dynamicImports": [
       "src/view/Hello.tsx",
@@ -67,70 +59,70 @@
       "src/view/ShowPost.tsx"
     ],
     "css": [
-      "static/assets/client-BcwlI4ii.css"
+      "static/assets/client-nxqMVzvV.css"
     ]
   },
   "src/view/BlogList.tsx": {
-    "file": "static/chunks/BlogList-BFFdJm2x.js",
+    "file": "static/chunks/BlogList-PKYRuHc8.js",
     "name": "BlogList",
     "src": "src/view/BlogList.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "_react-runtime-C2OcCn2q.js",
-      "_createLucideIcon-CmuOILP_.js",
-      "_chevron-right-CJG0g79T.js",
-      "_button-BcpiYQSL.js",
-      "_Article-Dz2KP2u-.js"
+      "_react-runtime-DpSKDDTj.js",
+      "_chevron-right-C6h7yTTx.js",
+      "src/client.tsx",
+      "_button-D8yYWndK.js",
+      "_Article-XmqdaFy1.js"
     ]
   },
   "src/view/BlogUpdateForm.tsx": {
-    "file": "static/chunks/BlogUpdateForm-Ciq_8F6X.js",
+    "file": "static/chunks/BlogUpdateForm-CySUqH9N.js",
     "name": "BlogUpdateForm",
     "src": "src/view/BlogUpdateForm.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js",
-      "_createLucideIcon-CmuOILP_.js",
-      "_button-BcpiYQSL.js",
-      "_label-CDfoFqvx.js"
+      "_react-runtime-DpSKDDTj.js",
+      "src/client.tsx",
+      "_button-D8yYWndK.js",
+      "_label-Bs4YmHtz.js"
     ]
   },
   "src/view/Blogs.tsx": {
-    "file": "static/chunks/Blogs-DXIYxv5R.js",
+    "file": "static/chunks/Blogs-Aijm5Y6n.js",
     "name": "Blogs",
     "src": "src/view/Blogs.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "_react-runtime-C2OcCn2q.js",
+      "_react-runtime-DpSKDDTj.js",
+      "_chevron-right-C6h7yTTx.js",
       "src/client.tsx",
-      "_chevron-right-CJG0g79T.js",
-      "_button-BcpiYQSL.js",
-      "_Article-Dz2KP2u-.js"
+      "_button-D8yYWndK.js",
+      "_Article-XmqdaFy1.js"
     ]
   },
   "src/view/Hello.tsx": {
-    "file": "static/chunks/Hello-DGg6h1QM.js",
+    "file": "static/chunks/Hello-Ztj5lDOl.js",
     "name": "Hello",
     "src": "src/view/Hello.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js",
+      "_react-runtime-DpSKDDTj.js",
       "src/client.tsx",
-      "_button-BcpiYQSL.js",
-      "_label-CDfoFqvx.js"
+      "_button-D8yYWndK.js",
+      "_label-Bs4YmHtz.js"
     ]
   },
   "src/view/ShowPost.tsx": {
-    "file": "static/chunks/ShowPost-DgNomC9E.js",
+    "file": "static/chunks/ShowPost-CGWAy88q.js",
     "name": "ShowPost",
     "src": "src/view/ShowPost.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-Bh1tDfsg.js",
-      "_react-runtime-C2OcCn2q.js",
-      "_Article-Dz2KP2u-.js"
+      "_react-runtime-DpSKDDTj.js",
+      "_Article-XmqdaFy1.js"
     ]
   }
 }

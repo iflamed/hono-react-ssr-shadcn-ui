@@ -35,6 +35,10 @@ const requestBlogMutation = async (
 }
 
 export default function BlogUpdateForm({ post, languages }: { post: BlogPost, languages: Language[] }) {
+    const languageItems = languages.map((language) => ({
+      label: `${language.name} (${language.nativeName})`,
+      value: language.code,
+    }))
     const [lang, setLang] = useState(post.lang || 'en')
     const [title, setTitle] = useState(post.title)
     const [excerpt, setExcerpt] = useState(post.desc)
@@ -134,6 +138,7 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
         <div className="space-y-2">
           <Label htmlFor="title">Language</Label>
           <Select
+            items={languageItems}
             value={lang}
             onValueChange={(value) => value && setLang(value)}
           >
@@ -143,7 +148,11 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Languages</SelectLabel>
-                {languages.map((lang) => (<SelectItem value={lang.code} key={lang.code}>{lang.name}({lang.nativeName})</SelectItem>))}
+                {languageItems.map((language) => (
+                  <SelectItem value={language.value} key={language.value}>
+                    {language.label}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

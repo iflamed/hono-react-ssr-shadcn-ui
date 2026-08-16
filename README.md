@@ -18,6 +18,8 @@ Start the development server
 
 ```shell
 npm install
+# Create/update the local D1 schema
+npm run db:migrate:local
 # Check TypeScript types
 npm run typecheck
 # Start the dev server
@@ -49,22 +51,50 @@ See [docs/js-code-splitting-plan.md](./docs/js-code-splitting-plan.md) for the o
 
 ### Blog Database
 
-We use Cloudflare's KV-Namespace to store articles.
-You can create KV-Namespace with this command:
+Blog articles are stored in Cloudflare D1 and accessed through Drizzle ORM. The
+schema source is `src/db/schema.ts`; generated SQL migrations are committed under
+`drizzle/d1`.
+
+For local development, apply all migrations before starting Vite:
 
 ```shell
-npx wrangler kv namespace create blog
+npm run db:migrate:local
+npm run dev
 ```
 
-This command will output the KV-Namespace configuration like this:
+After changing the schema, generate and verify a migration:
 
-```text
-[[kv_namespaces]]
-binding = "blog"
-id = "8617f8968998499bb3db425063f8f11d"
+```shell
+npm run db:generate -- --name=describe-your-change
+npm run db:check
+npm run db:migrate:local
 ```
 
-Then you should copy the KV-Namespace configuration to `wrangler.toml`
+`wrangler.toml` declares the `DB` binding without a database ID, so Wrangler can
+automatically provision the D1 database for this template. On the first
+production deployment, deploy once to provision the resource, apply the remote
+migrations, and then deploy the application again:
+
+```shell
+npm run deploy
+npm run db:migrate:remote
+npm run deploy
+```
+
+For an established production service, avoid the first-deploy provisioning gap:
+
+```shell
+npx wrangler d1 create hono-react-ssr-blog
+# Add the returned database_name and database_id to the DB block in wrangler.toml
+npm run cf-typegen
+npm run db:migrate:remote
+# Import existing KV records, verify them, and only then deploy the D1 code
+npm run deploy
+```
+
+Run `npm run db:migrate:remote` before deploying code that depends on later
+schema changes. Drizzle migrations create and upgrade the schema; they do not
+automatically copy records from an existing KV namespace.
 
 ### Blog's Admin
 

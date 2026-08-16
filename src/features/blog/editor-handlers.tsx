@@ -1,4 +1,5 @@
 import ISO6391 from "iso-639-1";
+import { getPostBySlug, toBlogPost } from "./post-repository";
 import { getBlogUrl } from "./types";
 import type { BlogPost } from "@/global";
 import type { BlogContext, BlogOptions } from "./types";
@@ -37,15 +38,10 @@ export const renderEditBlogPost = async (
   const slug = c.req.param("idx");
   if (!slug) return c.notFound();
 
-  const value = await c.env.blog.get(slug);
-  if (!value) return c.notFound();
+  const storedPost = await getPostBySlug(c.env.DB, slug);
+  if (!storedPost) return c.notFound();
 
-  const storedPost = JSON.parse(value) as BlogPost & { description?: string };
-  const post: BlogPost = {
-    ...storedPost,
-    slug,
-    desc: storedPost.description || storedPost.desc,
-  };
+  const post = toBlogPost(storedPost);
 
   return c.view("blogUpdateForm", {
     meta: {

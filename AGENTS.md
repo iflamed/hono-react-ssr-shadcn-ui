@@ -64,8 +64,11 @@ You are an expert full-stack developer proficient in TypeScript, React 19, Hono 
 - /vite.config.ts : Vite Development Environment Configuration File
 - /wrangler.toml : Cloudflare Workers source configuration used by the Cloudflare Vite Plugin
 - /worker-configuration.d.ts : Wrangler-generated binding and Workers runtime types; regenerate with `npm run cf-typegen`
+- /drizzle.config.ts : Drizzle Kit configuration for the Cloudflare D1 SQLite schema
+- /drizzle/d1 : Generated and committed D1 SQL migrations; do not edit an already-applied migration
 - /src/app.css : The main stylesheet file
 - /src/index.tsx : The main file which contain server routes, should add new route in this file
+- /src/db : Drizzle D1 client and schema definitions; change `schema.ts`, then run `npm run db:generate`
 - /src/view-loaders.ts : This file only contains the `view name -> dynamic import` configuration. Add every page here and do not add helper logic or manifest module ids.
 - /src/view.tsx : This module derives `ViewName` and provides the lazy view lookup helpers. Do not register pages here.
 - /src/global.d.ts : This file contains all Typescript type definitions, and new type definitions need to be placed in this file

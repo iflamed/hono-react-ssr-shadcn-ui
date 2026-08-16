@@ -1,3 +1,6 @@
+import { desc, eq, lt } from "drizzle-orm";
+import { createDatabase } from "@/db/client";
+import { posts } from "@/db/schema";
 import type { BlogPost } from "@/global";
 import type { BlogWriteInput } from "./types";
 
@@ -6,60 +9,110 @@ type ListedPosts = {
   cursor: string;
 };
 
-type StoredBlogPost = Omit<BlogWriteInput, "description"> & {
-  desc?: string;
-  description?: string;
-};
+const MAX_PAGE_SIZE = 100;
 
-const KV_BULK_READ_LIMIT = 100;
+export const toBlogPost = (post: typeof posts.$inferSelect): BlogPost => ({
+  slug: post.slug,
+  title: post.title,
+  desc: post.description,
+  banner: post.banner,
+  markdown: post.markdown,
+  lang: post.lang,
+  ts: post.updatedAt.getTime(),
+});
 
-const getStoredPosts = async (
-  blog: KVNamespace,
-  keyNames: string[],
-): Promise<Map<string, StoredBlogPost | null>> => {
-  const batches = Array.from(
-    { length: Math.ceil(keyNames.length / KV_BULK_READ_LIMIT) },
-    (_, index) =>
-      keyNames.slice(
-        index * KV_BULK_READ_LIMIT,
-        (index + 1) * KV_BULK_READ_LIMIT,
-      ),
-  );
-  const results = await Promise.all(
-    batches.map((keys) => blog.get<StoredBlogPost>(keys, "json")),
-  );
+const getCursorId = (cursor?: string): number | undefined => {
+  if (!cursor) return undefined;
 
-  return new Map(results.flatMap((result) => [...result]));
+  const cursorId = Number(cursor);
+  return Number.isSafeInteger(cursorId) && cursorId > 0 ? cursorId : undefined;
 };
 
 export const listPosts = async (
-  blog: KVNamespace,
+  binding: D1Database,
   limit: number,
   cursor?: string,
 ): Promise<ListedPosts> => {
-  const result = await blog.list({ limit, cursor });
-  const keyNames = result.keys.map((key) => key.name);
-  const storedPosts = await getStoredPosts(blog, keyNames);
-
-  const posts = result.keys.flatMap((key) => {
-    const storedPost = storedPosts.get(key.name);
-    const metadata = key.metadata as Pick<BlogPost, "ts"> | null;
-    if (!storedPost) return [];
-
-    return [
-      {
-        slug: key.name,
-        title: storedPost.title,
-        desc: storedPost.description || storedPost.desc || "",
-        banner: storedPost.banner,
-        lang: storedPost.lang,
-        ts: metadata?.ts || 0,
-      },
-    ];
-  });
+  const pageSize = Math.min(Math.max(limit, 1), MAX_PAGE_SIZE);
+  const cursorId = getCursorId(cursor);
+  const database = createDatabase(binding);
+  const rows = await database
+    .select()
+    .from(posts)
+    .where(cursorId ? lt(posts.id, cursorId) : undefined)
+    .orderBy(desc(posts.id))
+    .limit(pageSize + 1);
+  const hasNextPage = rows.length > pageSize;
+  const pageRows = rows.slice(0, pageSize);
 
   return {
-    posts,
-    cursor: result.list_complete ? "" : result.cursor,
+    posts: pageRows.map(toBlogPost),
+    cursor: hasNextPage ? String(pageRows.at(-1)?.id || "") : "",
   };
+};
+
+export const getPostBySlug = async (binding: D1Database, slug: string) => {
+  const database = createDatabase(binding);
+  const [post] = await database
+    .select()
+    .from(posts)
+    .where(eq(posts.slug, slug))
+    .limit(1);
+
+  return post;
+};
+
+export const createPost = async (
+  binding: D1Database,
+  slug: string,
+  input: BlogWriteInput,
+  timestamp: Date,
+) => {
+  const database = createDatabase(binding);
+  await database.insert(posts).values({
+    slug,
+    title: input.title,
+    description: input.description,
+    banner: input.banner,
+    markdown: input.markdown,
+    lang: input.lang,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  });
+};
+
+export const updatePost = async (
+  binding: D1Database,
+  slug: string,
+  input: BlogWriteInput,
+  timestamp: Date,
+): Promise<boolean> => {
+  const database = createDatabase(binding);
+  const updatedPosts = await database
+    .update(posts)
+    .set({
+      title: input.title,
+      description: input.description,
+      banner: input.banner,
+      markdown: input.markdown,
+      lang: input.lang,
+      updatedAt: timestamp,
+    })
+    .where(eq(posts.slug, slug))
+    .returning({ id: posts.id });
+
+  return updatedPosts.length > 0;
+};
+
+export const deletePost = async (
+  binding: D1Database,
+  slug: string,
+): Promise<boolean> => {
+  const database = createDatabase(binding);
+  const deletedPosts = await database
+    .delete(posts)
+    .where(eq(posts.slug, slug))
+    .returning({ id: posts.id });
+
+  return deletedPosts.length > 0;
 };

@@ -36,7 +36,7 @@
 - 博客列表、编辑、写操作和文章 Markdown 渲染按路由拆分。
 - 稳定公共运行时使用内容 hash，获得更长的浏览器/CDN 缓存生命周期。
 - 从 Cloudflare Pages `_worker.js` 模式迁移到 Cloudflare Workers + Vite Plugin。
-- 保持既有 URL、动态 SSR、KV binding、页面 props 和 Basic Auth 行为兼容。
+- 保持既有 URL、动态 SSR、页面 props 和 Basic Auth 行为兼容，并将博客持久化切换到 D1。
 
 ## 3. 最终技术栈
 
@@ -50,7 +50,7 @@
 | 部署工具 | Wrangler 4.x |
 | 样式 | Tailwind CSS 4.x + Shadcn UI |
 | SSR | `@hono/react-renderer` |
-| 数据 | Cloudflare Workers KV |
+| 数据 | Cloudflare D1 + Drizzle ORM |
 | 浏览器请求 | 原生 Fetch API，不使用 Axios |
 
 升级和依赖调整包括：
@@ -60,6 +60,7 @@
 - 升级到 Vite 8，使用 Environment API 分别构建 `client` 和 `ssr` 环境。
 - TypeScript 升级到 7.x，与当前依赖类型定义保持兼容。
 - Axios 已从依赖树移除，博客编辑和写操作改用原生 `fetch`。
+- 博客数据已从 Workers KV 迁移到 D1；Drizzle ORM 提供类型安全查询，Drizzle Kit 生成版本化迁移。
 
 ## 4. 最终架构
 
@@ -74,7 +75,7 @@
     └── Hono Worker
         ├── i18n 中间件
         ├── 按路由动态导入业务 handler
-        ├── 按需读写 Workers KV
+        ├── 按需通过 Drizzle 读写 D1
         ├── 按视图动态导入 React 页面
         ├── React SSR
         └── 返回只包含当前页面资源依赖的 HTML
@@ -100,7 +101,7 @@ dist/
     └── wrangler.json
 ```
 
-`dist/client` 是公开静态资源目录。`dist/ssr` 是可执行的 Worker ESM 模块，不是预生成静态 HTML；页面请求仍可访问 KV 或其他数据库，并在每次请求时动态生成 SSR HTML。
+`dist/client` 是公开静态资源目录。`dist/ssr` 是可执行的 Worker ESM 模块，不是预生成静态 HTML；页面请求仍可访问 D1 或其他数据库，并在每次请求时动态生成 SSR HTML。
 
 ## 5. 实施顺序与当前状态
 
@@ -231,7 +232,7 @@ src/features/blog/
 
 - `markdown-it` 随文章 SSR handler 加载；
 - `iso-639-1` 随编辑器 handler 加载；
-- slug 生成和 KV 写操作只随 mutation handler 加载；
+- slug 生成和 D1 写操作只随 mutation handler 加载；
 - 公开列表请求不加载编辑器、Markdown 或写操作代码；
 - 页面组件继续作为独立的 Worker chunk 输出。
 
@@ -288,7 +289,7 @@ Cloudflare Vite Plugin 将 Hono Worker 集成到 Vite 的 `ssr` 环境，并在�
 
 - Worker 名称和 `src/index.tsx` 入口；
 - compatibility date 和 `nodejs_compat`；
-- `blog` KV binding；
+- `DB` D1 binding；
 - 普通变量和 required secrets；
 - `workers_dev = true`；
 - `preview_urls = false`。
@@ -304,6 +305,9 @@ npm run build     # 先 client，后 SSR Worker
 npm run preview   # 预览编译后 Workers 产物
 npm run deploy    # build 后 wrangler deploy
 npm run cf-typegen
+npm run db:generate -- --name=change-name
+npm run db:migrate:local
+npm run db:migrate:remote
 ```
 
 静态资源使用 asset-first 路由：命中 `dist/client` 文件时直接由 Workers Static Assets 提供；未命中的页面和 API 请求才进入 Hono Worker。
@@ -326,22 +330,25 @@ Workers Static Assets 默认可使用 ETag 重新验证。浏览器显示 `304 N
 - 用户相关或鉴权响应；
 - URL 不带版本/hash、内容可能原地变化的文件。
 
-## 12. 动态 SSR 与 Workers KV
+## 12. 动态 SSR、Cloudflare D1 与 Drizzle ORM
 
 构建不会预生成页面 HTML。博客请求的实际链路是：
 
 ```text
 request
 -> Hono route
--> Workers KV binding
+-> Drizzle repository
+-> Cloudflare D1 binding
 -> 生成页面 props
 -> React SSR
 -> HTML response
 ```
 
-因此 Cloudflare Workers 版本仍然可以连接 KV、D1、Hyperdrive 或外部数据库，并按请求生成动态内容。
+因此 Cloudflare Workers 版本可以连接 D1、Hyperdrive 或外部数据库，并按请求生成动态内容。
 
-当前 `blog` 数据适合 KV 的读多写少模型，但 KV 是最终一致的：某个地区写入后，其他地区可能短时间读取到旧值。如果业务需要事务、关系查询或更强一致性，应评估 D1；如果需要单实体串行协调，应评估 Durable Objects。
+当前博客通过 `c.env.DB` 获取 D1 binding，并在 repository 内按请求创建 Drizzle client。`src/db/schema.ts` 是 schema 的唯一来源，Drizzle Kit 将 SQLite migration 生成到 `drizzle/d1`，再由 Wrangler 分别应用到本地或远程 D1。列表采用基于自增主键的 keyset pagination，避免随着数据量增加而不断放大的 offset 扫描成本。
+
+本地开发前运行 `npm run db:migrate:local`；生产发布时显式运行 `npm run db:migrate:remote`。Drizzle schema migration 只负责表结构，不会自动复制原 KV 中的文章，已有线上数据必须在移除 KV binding 前单独完成一次性导入。
 
 配置与秘密分离：
 
@@ -434,11 +441,11 @@ app.get("/login", (c) => {
 - 页面必须使用字面量 `import("./view/...")`，否则 Vite 无法可靠生成独立动态入口。
 - 视图键名必须和文件名规范化后匹配，否则 SSR 可渲染，但无法自动注入该页面的 preload。
 - 不要恢复全量 `node_modules` vendor chunk。
-- 客户端入口和共享 shell 不得 import 服务端 renderer、KV repository 或 Node-only 模块。
+- 客户端入口和共享 shell 不得 import 服务端 renderer、D1 repository 或 Node-only 模块。
 - 不要手工修改 `src/lib/manifest.json`；它由构建流程覆盖。
 - 不要交换 client-before-Worker 的构建顺序。
 - 不要对动态 HTML、API 或鉴权响应使用 immutable 缓存。
-- Workers KV 按最终一致性设计，不应假设写入后全球立即可见。
+- 不得直接修改已经应用的 Drizzle migration；应修改 schema 后生成新的 migration。
 - SSR 和 hydrate 必须使用相同 `ClientShell`、view name 和 props，避免 hydration mismatch。
 - 每次升级 Vite/Rolldown 后应重新检查 manifest shape、动态入口名称和 chunk 分组结果。
 - 部署前应验证编译产物的 `npm run preview`，不能只验证开发服务器。
@@ -451,12 +458,13 @@ app.get("/login", (c) => {
 2. 使用真实访问数据记录 LCP、INP、缓存命中率和各页面 JS 依赖闭包，而非只比较磁盘上的最大 chunk。
 3. 当 BlogUpdateForm 功能继续增长时，再按编辑器能力拆分富交互组件。
 4. 只有当业务域、权限、发布节奏或资源限制确实需要隔离时，才拆为多个 Worker 并使用 Service Binding。
-5. 数据模型需要关系查询、事务或强一致性时，再从 KV 迁移到 D1/Durable Objects。
+5. 根据真实查询数据决定是否增加全文搜索、复合索引或 D1 read replication，不提前增加无使用证据的索引。
 
 ## 18. 部署前验收清单
 
 ```shell
 npm run typecheck
+npm run db:check
 npm run build
 npm run preview
 ```
@@ -467,7 +475,8 @@ npm run preview
 - HTML 没有 preload 其他无关页面；
 - `dist/ssr/wrangler.json` 的静态资源目录指向 `dist/client`；
 - `/static/*` 返回预期的 immutable 缓存头；
-- SSR 页面、API、KV 读取和 Basic Auth 行为正常；
+- 本地与远程 D1 migration 状态正确；
+- SSR 页面、API、D1 CRUD 和 Basic Auth 行为正常；
 - `.dev.vars` 等 secret 文件未被 Git 跟踪；
 - Wrangler 部署同时上传 Worker modules 和客户端静态资源；
 - 发布后的 workers.dev、自定义域名和 Preview URL 行为与 `wrangler.toml` 一致。
@@ -479,5 +488,6 @@ npm run preview
 - [Vite environments](https://developers.cloudflare.com/workers/vite-plugin/reference/vite-environments/)
 - [Static assets with the Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
 - [Static Assets headers](https://developers.cloudflare.com/workers/static-assets/headers/)
-- [Workers KV bindings](https://developers.cloudflare.com/kv/concepts/kv-bindings/)
-- [Workers KV consistency model](https://developers.cloudflare.com/kv/concepts/how-kv-works/)
+- [Cloudflare D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/)
+- [Cloudflare D1 local development](https://developers.cloudflare.com/d1/best-practices/local-development/)
+- [Drizzle ORM with Cloudflare D1](https://orm.drizzle.team/docs/sqlite/connect-cloudflare-d1)

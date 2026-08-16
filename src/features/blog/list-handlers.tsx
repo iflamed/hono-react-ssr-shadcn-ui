@@ -12,7 +12,7 @@ export const renderAdminBlogList = async (
   options: BlogOptions,
 ) => {
   const { posts, cursor } = await listPosts(
-    c.env.blog,
+    c.env.DB,
     getLimit(c.req.query("limit"), 12),
     c.req.query("cursor"),
   );
@@ -37,7 +37,7 @@ export const renderPublicBlogList = async (
   options: BlogOptions,
 ) => {
   const { posts, cursor } = await listPosts(
-    c.env.blog,
+    c.env.DB,
     getLimit(c.req.query("limit"), 18),
     c.req.query("cursor"),
   );

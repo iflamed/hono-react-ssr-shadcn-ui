@@ -1,51 +1,86 @@
 import slugify from "@sindresorhus/slugify";
+import { createPost, deletePost, updatePost } from "./post-repository";
+import { blogWriteInputSchema } from "./types";
 import type { BlogContext, BlogWriteInput } from "./types";
 
-const readBlogInput = async (
-  c: BlogContext,
-): Promise<{
-  body: string;
-  input: BlogWriteInput;
-}> => {
-  const body = await c.req.text();
-  return {
-    body,
-    input: JSON.parse(body) as BlogWriteInput,
-  };
+type ParsedBlogInput =
+  { input: BlogWriteInput; error?: never } | { input?: never; error: Response };
+
+const readBlogInput = async (c: BlogContext): Promise<ParsedBlogInput> => {
+  const value = await c.req.json().catch(() => null);
+  const result = blogWriteInputSchema.safeParse(value);
+
+  if (!result.success) {
+    return {
+      error: c.json(
+        { status: 1, error: c.locale.t("blog_invalid_input") },
+        400,
+      ),
+    };
+  }
+
+  return { input: result.data };
 };
 
-const getMetadata = (timestamp: number) => ({ ts: timestamp });
+const isUniqueConstraintError = (error: unknown) =>
+  error instanceof Error && /UNIQUE constraint failed/i.test(error.message);
 
 export const createBlogPost = async (c: BlogContext) => {
-  const { body, input } = await readBlogInput(c);
-  const timestamp = Date.now();
-  const providedSlug = input.slug?.trim().replace(/\s+/g, "-");
-  const generatedSlug = slugify(input.title.replaceAll(".", ""));
-  const slug = `${9999999999999 - timestamp}-${providedSlug || generatedSlug}`;
+  const parsedInput = await readBlogInput(c);
+  if (parsedInput.error) return parsedInput.error;
 
-  await c.env.blog.put(slug, body, {
-    metadata: getMetadata(timestamp),
-  });
+  const timestamp = new Date();
+  const slugSource = parsedInput.input.slug || parsedInput.input.title;
+  const readableSlug = slugify(slugSource.replaceAll(".", "")) || "post";
+  const slug = `${9999999999999 - timestamp.getTime()}-${readableSlug}`;
 
-  return c.json({ status: 0, data: null });
+  try {
+    await createPost(c.env.DB, slug, parsedInput.input, timestamp);
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return c.json(
+        { status: 1, error: c.locale.t("blog_slug_conflict") },
+        409,
+      );
+    }
+    throw error;
+  }
+
+  return c.json({ status: 0, data: { slug } });
 };
 
 export const updateBlogPost = async (c: BlogContext) => {
   const slug = c.req.param("idx");
-  if (!slug) return c.json({ status: 1, error: "Missing blog slug" }, 400);
+  if (!slug) {
+    return c.json({ status: 1, error: c.locale.t("blog_missing_slug") }, 400);
+  }
 
-  const { body } = await readBlogInput(c);
-  await c.env.blog.put(slug, body, {
-    metadata: getMetadata(Date.now()),
-  });
+  const parsedInput = await readBlogInput(c);
+  if (parsedInput.error) return parsedInput.error;
+
+  const isUpdated = await updatePost(
+    c.env.DB,
+    slug,
+    parsedInput.input,
+    new Date(),
+  );
+  if (!isUpdated) {
+    return c.json({ status: 1, error: c.locale.t("blog_not_found") }, 404);
+  }
 
   return c.json({ status: 0, data: null });
 };
 
 export const deleteBlogPost = async (c: BlogContext) => {
   const slug = c.req.param("idx");
-  if (!slug) return c.json({ status: 1, error: "Missing blog slug" }, 400);
+  if (!slug) {
+    return c.json({ status: 1, error: c.locale.t("blog_missing_slug") }, 400);
+  }
 
-  await c.env.blog.delete(slug);
+  const isDeleted = await deletePost(c.env.DB, slug);
+  if (!isDeleted) {
+    return c.json({ status: 1, error: c.locale.t("blog_not_found") }, 404);
+  }
+
   return c.json({ status: 0 });
 };

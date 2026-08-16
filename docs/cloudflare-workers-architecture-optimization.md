@@ -10,7 +10,7 @@ This document describes the optimized Cloudflare edition of the Hono + React SSR
 - manifest-driven asset injection;
 - the migration from Cloudflare Pages to Cloudflare Workers;
 - static asset delivery and browser caching;
-- dynamic SSR backed by Workers KV;
+- dynamic SSR backed by Cloudflare D1 and Drizzle ORM;
 - build, preview, deployment, and verification requirements.
 
 The primary goal is to prevent every page, interaction, API handler, and SSR dependency from being bundled into one large browser file or one monolithic Worker module.
@@ -28,7 +28,7 @@ The optimized Cloudflare branch targets the following stack:
 | Cloudflare integration | `@cloudflare/vite-plugin` 1.47.x |
 | Deployment CLI | Wrangler 4.x |
 | Styling | Tailwind CSS 4.x and Shadcn UI |
-| Storage | Cloudflare Workers KV binding |
+| Storage | Cloudflare D1 with Drizzle ORM |
 | Server rendering | `@hono/react-renderer` |
 
 Important upgrade decisions:
@@ -42,6 +42,7 @@ Important upgrade decisions:
 4. TypeScript was upgraded to version 7.
 5. Axios was removed from the browser bundle. Blog mutations now use the native Fetch API.
 6. The client no longer imports server rendering modules such as `@hono/react-renderer` or `react-dom/server`.
+7. Blog persistence moved from Workers KV to Cloudflare D1. Drizzle ORM provides typed queries, and Drizzle Kit generates versioned SQL migrations.
 
 ## 3. High-Level Architecture
 
@@ -56,7 +57,7 @@ Browser request
     └── Hono Worker
         ├── language and i18n middleware
         ├── route-level dynamic handler import
-        ├── optional Workers KV read/write
+        ├── optional Drizzle/D1 read/write
         ├── page-level dynamic component import
         ├── React SSR
         └── HTML with exact client entry, CSS, and module preloads
@@ -297,7 +298,7 @@ The source Wrangler configuration declares:
 - the Worker name;
 - the TypeScript Hono entry;
 - the compatibility date and `nodejs_compat` flag;
-- the KV binding;
+- the D1 database binding;
 - non-secret variables;
 - required secret names;
 - explicit `workers_dev` and `preview_urls` behavior.
@@ -346,24 +347,25 @@ Do not apply this policy to:
 
 A `304 Not Modified` response has no HTTP body, but browser developer tools can still show response-header transfer bytes and the cached representation. With immutable hashed assets, normal repeat visits avoid this revalidation round trip entirely.
 
-## 11. Dynamic SSR and Workers KV
+## 11. Dynamic SSR, Cloudflare D1, and Drizzle ORM
 
 The project does not generate static HTML during the build. Routes such as `/blogs` and `/article/:idx` execute dynamically:
 
 ```text
 request
 -> Hono route
--> Workers KV binding
+-> Drizzle repository
+-> Cloudflare D1 binding
 -> page props
 -> React SSR
 -> HTML response
 ```
 
-The `blog` KV namespace is configured as a Wrangler binding and is available through `c.env.blog`.
+The `DB` D1 database is configured as a Wrangler binding and is available through `c.env.DB`. A Drizzle client is created from that request binding; application modules do not keep a mutable database client in global scope.
 
-KV is appropriate here because the blog is read-heavy and writes are relatively infrequent. It is eventually consistent across Cloudflare locations, so an update can take time to become visible in locations that cached an older value. Applications requiring transactions or strong per-entity coordination should use D1 or Durable Objects instead.
+`src/db/schema.ts` is the schema source of truth. Drizzle Kit writes generated SQLite migrations to `drizzle/d1`, while Wrangler records and applies those migrations to local or remote D1 databases. The blog repository uses a unique slug index, separate creation and modification timestamps, and keyset pagination based on the integer primary key.
 
-Local development uses local KV data by default unless the binding is explicitly configured for remote access.
+Local development uses Wrangler's local D1 database. Run `npm run db:migrate:local` before `npm run dev`. Apply production migrations explicitly with `npm run db:migrate:remote`; deploying Worker code does not replace schema migration management. Schema migrations do not copy data from a previous KV namespace, so existing production articles require a separate one-time data import before the KV binding is removed.
 
 ## 12. Variables, Secrets, and Generated Types
 
@@ -449,7 +451,7 @@ Verify:
 - every page appears as `isDynamicEntry` in the client manifest;
 - the browser client graph does not contain server renderer code;
 - `/` and `/blogs` return SSR HTML;
-- an article route returns SSR HTML when the KV key exists;
+- an article route returns SSR HTML when the D1 row exists;
 - `/blog/list` returns `401` without Basic Auth credentials;
 - each page preloads its own chunk rather than every page chunk;
 - hashed `/static/*` responses include the immutable cache header;
@@ -490,7 +492,7 @@ No `ViewName` union or manifest module ID update is required.
 - Do not import server modules from the client entry.
 - Do not manually edit generated binding types.
 - Do not cache dynamic SSR or authenticated API responses as immutable assets.
-- Treat Workers KV as eventually consistent.
+- Generate Drizzle migrations from `src/db/schema.ts` and apply them with Wrangler; do not edit an already-applied migration.
 - Keep the client-before-Worker build order.
 - Preview compiled output before deployment, not only the development server.
 
@@ -501,5 +503,6 @@ No `ViewName` union or manifest module ID update is required.
 - [Vite environments in the Cloudflare Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/vite-environments/)
 - [Static assets with the Cloudflare Vite Plugin](https://developers.cloudflare.com/workers/vite-plugin/reference/static-assets/)
 - [Workers Static Assets headers](https://developers.cloudflare.com/workers/static-assets/headers/)
-- [Workers KV bindings](https://developers.cloudflare.com/kv/concepts/kv-bindings/)
-- [Workers KV consistency model](https://developers.cloudflare.com/kv/concepts/how-kv-works/)
+- [Cloudflare D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/)
+- [Cloudflare D1 local development](https://developers.cloudflare.com/d1/best-practices/local-development/)
+- [Drizzle ORM with Cloudflare D1](https://orm.drizzle.team/docs/sqlite/connect-cloudflare-d1)

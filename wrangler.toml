@@ -11,18 +11,14 @@ BLOG_USERNAME="admin"
 [secrets]
 required = [ "BLOG_PASSWORD" ]
 
-[[kv_namespaces]]
-binding = "blog"
-id = "8617f8968998499bb3db425063f8f01d"
+[[d1_databases]]
+binding = "DB"
+migrations_dir = "drizzle/d1"
+migrations_pattern = "drizzle/d1/*/migration.sql"
 
 # [[r2_buckets]]
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
-
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
 
 # [ai]
 # binding = "AI"
