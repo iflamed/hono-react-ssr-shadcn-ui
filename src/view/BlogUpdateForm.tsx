@@ -133,7 +133,10 @@ export default function BlogUpdateForm({ post, languages }: { post: BlogPost, la
   
         <div className="space-y-2">
           <Label htmlFor="title">Language</Label>
-          <Select value={lang} onValueChange={(v) => setLang(v)}>
+          <Select
+            value={lang}
+            onValueChange={(value) => value && setLang(value)}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
