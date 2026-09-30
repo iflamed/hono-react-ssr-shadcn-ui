@@ -1,7 +1,7 @@
 // i18n.ts
-import React, { createContext, useContext, useMemo, useState } from "react"
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react"
 
-type Resources = Record<string, any>
+export type I18nResources = Record<string, any>
 
 export interface I18nInstance {
   lang: string
@@ -25,7 +25,7 @@ export interface I18nInstance {
 
 export interface CreateI18nOptions {
   lang: string
-  resources: Resources
+  resources: I18nResources
   fallbackLang?: string
   defaultNS?: string
 }
@@ -167,12 +167,17 @@ export function useTranslation(ns?: string) {
 
   const namespace = ns || ctx.ns || ctx.defaultNS
 
-  function t(key: string, vars?: any) {
-    if (!key.includes(":")) {
-      return ctx.t(`${namespace}:${key}`, vars)
-    }
-    return ctx.t(key, vars)
-  }
+  // t 必须引用稳定：页面普遍以 t 作为 useCallback/useEffect 依赖，
+  // 若每次渲染返回新函数会导致数据加载 effect 无限循环
+  const t = useCallback(
+    (key: string, vars?: Record<string, any>) => {
+      if (!key.includes(":")) {
+        return ctx.t(`${namespace}:${key}`, vars)
+      }
+      return ctx.t(key, vars)
+    },
+    [ctx, namespace],
+  )
 
   return {
     t,
